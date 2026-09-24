@@ -1988,8 +1988,8 @@ else
         var side =
             piece.Color ==
                 PieceColor.White
-                ? "first-player"
-                : "second-player";
+                ? "first"
+                : "second";
 
 
         var pieceName =
@@ -2017,7 +2017,7 @@ else
 
         return
             $"{AssetRoot}" +
-            $"{side}/" +
+            $"{side}/representations/western/" +
             $"{pieceName}.svg";
     }
 
