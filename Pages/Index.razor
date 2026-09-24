@@ -130,7 +130,20 @@ else
 
                     </div>
 
-                    @KingMessageBubble
+                    @if (GetComputerKingSquare() is int kingSquare &&
+                         !string.IsNullOrWhiteSpace(comments.LastOrDefault()))
+                    {
+                        <div class="king-message"
+                             style="@KingBubbleStyle(kingSquare)">
+
+                            <div class="king-message-text">
+                                @comments.Last()
+                            </div>
+
+                            <div class="king-message-tail"></div>
+
+                        </div>
+                    }
 
                 </div>
 
@@ -199,8 +212,7 @@ else
                                   i < game.History.Count;
                                   i++)
                             {
-                                var move =
-                                    game.History[i];
+                                var move = game.History[i];
 
                                 <span>
                                     <b>
@@ -468,8 +480,8 @@ else
     </div>
 }
 
-@code {
-
+@code
+{
     private ChessGame game = new();
 
     private ComputerProfile profile = new();
@@ -504,12 +516,6 @@ else
     private const string AssetRoot =
         "https://sashite.dev/assets/chess/sides/";
 
-
-    /*
-     * ============================================================
-     * COMPUTER CARD
-     * ============================================================
-     */
 
     private RenderFragment ComputerCard =>
         @<div class="computer-card">
@@ -581,45 +587,6 @@ else
         </div>;
 
 
-    /*
-     * ============================================================
-     * KING MESSAGE BUBBLE
-     * ============================================================
-     *
-     * This bubble is attached to the computer's actual king square.
-     * It automatically follows the king around the board.
-     */
-
-    private RenderFragment KingMessageBubble =>
-        @if (GetComputerKingSquare() is int kingSquare &&
-             !string.IsNullOrWhiteSpace(
-                 comments.LastOrDefault()))
-        {
-            var row =
-                ChessGame.Row(kingSquare);
-
-            var col =
-                ChessGame.Col(kingSquare);
-
-            var left =
-                (col * 12.5) + 6.25;
-
-            var top =
-                (row * 12.5) - 2.0;
-
-            <div class="king-message"
-                 style="@($"left:{left.ToString(System.Globalization.CultureInfo.InvariantCulture)}%; top:{top.ToString(System.Globalization.CultureInfo.InvariantCulture)}%;")">
-
-                <div class="king-message-text">
-                    @comments.Last()
-                </div>
-
-                <div class="king-message-tail"></div>
-
-            </div>
-        };
-
-
     private int? GetComputerKingSquare()
     {
         var computerColor =
@@ -642,11 +609,33 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * START GAME
-     * ============================================================
-     */
+    private string KingBubbleStyle(
+        int square)
+    {
+        var row =
+            ChessGame.Row(square);
+
+        var col =
+            ChessGame.Col(square);
+
+        var left =
+            (col * 12.5) + 6.25;
+
+        var top =
+            (row * 12.5) + 2.0;
+
+        var leftText =
+            left.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        var topText =
+            top.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        return
+            $"left:{leftText}%;top:{topText}%;";
+    }
+
 
     private async Task StartAsync(
         PieceColor color)
@@ -696,12 +685,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * EXIT
-     * ============================================================
-     */
-
     private void Exit()
     {
         CancelComputer();
@@ -720,12 +703,6 @@ else
         comments.Clear();
     }
 
-
-    /*
-     * ============================================================
-     * PAUSE / RESUME
-     * ============================================================
-     */
 
     private void PauseResume()
     {
@@ -757,12 +734,6 @@ else
         StateHasChanged();
     }
 
-
-    /*
-     * ============================================================
-     * BOARD CLICK
-     * ============================================================
-     */
 
     private void ClickSquare(int sq)
     {
@@ -846,12 +817,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * PLAYER MOVE
-     * ============================================================
-     */
-
     private async Task MakePlayerMoveAsync(
         Move move)
     {
@@ -933,12 +898,6 @@ else
         await ComputerTurnAsync();
     }
 
-
-    /*
-     * ============================================================
-     * COMPUTER TURN
-     * ============================================================
-     */
 
     private async Task ComputerTurnAsync()
     {
@@ -1104,12 +1063,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * GAME OVER
-     * ============================================================
-     */
-
     private void AddGameOver()
     {
         bool playerWon =
@@ -1129,12 +1082,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * COMMENTARY
-     * ============================================================
-     */
-
     private void AddComment(
         string message)
     {
@@ -1152,12 +1099,6 @@ else
         }
     }
 
-
-    /*
-     * ============================================================
-     * CHESS NOTATION
-     * ============================================================
-     */
 
     private string BuildNotation(
         Move move)
@@ -1216,12 +1157,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * PROMOTION
-     * ============================================================
-     */
-
     private void Promote(
         Move move)
     {
@@ -1236,12 +1171,6 @@ else
             move);
     }
 
-
-    /*
-     * ============================================================
-     * BOARD CSS CLASSES
-     * ============================================================
-     */
 
     private string SquareClass(
         int sq,
@@ -1276,12 +1205,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * ONLINE PIECES
-     * ============================================================
-     */
-
     private string PieceUrl(
         Piece p)
     {
@@ -1302,12 +1225,6 @@ else
             $"western/{file}";
     }
 
-
-    /*
-     * ============================================================
-     * PIECE NAMES
-     * ============================================================
-     */
 
     private static string PieceName(
         Piece p)
@@ -1334,12 +1251,6 @@ else
         };
     }
 
-
-    /*
-     * ============================================================
-     * CAPTURE DISPLAY
-     * ============================================================
-     */
 
     private static string Captured(
         IEnumerable<Piece> pieces)
@@ -1377,12 +1288,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * COMPUTER ID
-     * ============================================================
-     */
-
     private string ComputerId()
     {
         return
@@ -1396,12 +1301,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * ACCESSIBILITY
-     * ============================================================
-     */
-
     private string SquareAria(
         int sq,
         Piece? p)
@@ -1413,12 +1312,6 @@ else
                 : PieceName(p))}";
     }
 
-
-    /*
-     * ============================================================
-     * RESULT
-     * ============================================================
-     */
 
     private string DisplayResult()
     {
@@ -1442,12 +1335,6 @@ else
     }
 
 
-    /*
-     * ============================================================
-     * CANCELLATION
-     * ============================================================
-     */
-
     private void CancelComputer()
     {
         try
@@ -1465,12 +1352,6 @@ else
         thinking = false;
     }
 
-
-    /*
-     * ============================================================
-     * DISPOSE
-     * ============================================================
-     */
 
     public void Dispose()
     {
