@@ -24,7 +24,6 @@ public sealed class ComputerProfile
     public int Risk { get; set; }
     public int Confidence { get; set; }
 
-    // Memory of what happened during the current game.
     public int PlayerCaptures { get; set; }
     public int PlayerChecks { get; set; }
     public int ComputerCaptures { get; set; }
@@ -63,7 +62,6 @@ public sealed class ComputerProfile
     public bool DramaQueen { get; set; }
     public bool Ragebaiter { get; set; }
 
-    // Used to prevent personality messages from becoming repetitive.
     public Queue<string> RecentCommentary { get; } = new();
 
     public void Clamp()
