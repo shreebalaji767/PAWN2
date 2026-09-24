@@ -173,11 +173,11 @@ img {
 }
 
 .start-card {
-    width: min(620px, 100%);
+    width: min(700px, 100%);
 
     padding:
-        clamp(36px, 7vw, 64px)
-        clamp(22px, 6vw, 54px);
+        clamp(34px, 6vw, 58px)
+        clamp(20px, 5vw, 48px);
 
     text-align: center;
 
@@ -197,7 +197,7 @@ img {
 }
 
 .start-card h1 {
-    margin: 42px 0 22px;
+    margin: 38px 0 20px;
 
     color: var(--text);
 
@@ -218,7 +218,205 @@ img {
 
     gap: 12px;
 
-    margin-bottom: 12px;
+    margin-bottom: 18px;
+}
+
+/* =========================================================
+   DIFFICULTY
+   ========================================================= */
+
+.difficulty-section {
+    margin: 22px 0 18px;
+
+    text-align: left;
+}
+
+.difficulty-heading {
+    margin-bottom: 10px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+    font-weight: 1000;
+
+    letter-spacing: 0.16em;
+
+    text-align: center;
+}
+
+.difficulty-choice {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 8px;
+}
+
+.difficulty-option {
+    position: relative;
+
+    min-height: 104px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 8px;
+
+    color: var(--text-soft);
+
+    background:
+        linear-gradient(
+            180deg,
+            #1b222d,
+            #131922
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    text-align: center;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background 0.16s ease,
+        border-color 0.16s ease,
+        color 0.16s ease,
+        transform 0.12s ease,
+        box-shadow 0.16s ease;
+}
+
+.difficulty-option:hover {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            180deg,
+            #252e3b,
+            #19212c
+        );
+
+    border-color: var(--border-strong);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.difficulty-option.selected {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 204, 51, 0.18),
+            rgba(255, 204, 51, 0.055)
+        );
+
+    border-color:
+        rgba(255, 204, 51, 0.65);
+
+    box-shadow:
+        0 0 0 1px rgba(255, 204, 51, 0.12),
+        0 9px 25px rgba(0, 0, 0, 0.28);
+}
+
+.difficulty-option.selected::after {
+    content: "✓";
+
+    position: absolute;
+
+    top: 7px;
+    right: 8px;
+
+    width: 19px;
+    height: 19px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #11151a;
+
+    background: var(--accent);
+
+    border-radius: 50%;
+
+    font-size: 10px;
+    font-weight: 1000;
+}
+
+.difficulty-icon {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 22px;
+
+    line-height: 1;
+}
+
+.difficulty-name {
+    display: block;
+
+    color: inherit;
+
+    font-size: 10px;
+    font-weight: 1000;
+
+    letter-spacing: 0.05em;
+}
+
+.difficulty-description {
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 8px;
+    font-weight: 700;
+
+    line-height: 1.35;
+}
+
+.difficulty-option.selected .difficulty-description {
+    color: #b8b08b;
+}
+
+.difficulty-current {
+    min-height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 9px;
+    padding: 7px 10px;
+
+    color: var(--accent);
+
+    background: rgba(255, 204, 51, 0.055);
+
+    border:
+        1px solid rgba(255, 204, 51, 0.12);
+
+    border-radius: 9px;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: 0.04em;
 }
 
 /* =========================================================
@@ -434,7 +632,7 @@ img {
    ========================================================= */
 
 .free-note {
-    margin: 25px 0 0;
+    margin: 22px 0 0;
 
     color: var(--muted-dark);
 
@@ -1020,6 +1218,38 @@ img {
     line-height: 1.35;
 
     font-style: italic;
+}
+
+/* =========================================================
+   DIFFICULTY BADGE IN GAME
+   ========================================================= */
+
+.difficulty-badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    margin-top: 10px;
+
+    padding: 6px 9px;
+
+    color: var(--accent);
+
+    background:
+        rgba(255, 204, 51, 0.075);
+
+    border:
+        1px solid rgba(255, 204, 51, 0.16);
+
+    border-radius: 8px;
+
+    font-size: 8px;
+    font-weight: 1000;
+
+    letter-spacing: 0.08em;
 }
 
 /* =========================================================
@@ -1667,6 +1897,10 @@ img {
     .computer-card {
         padding: 15px;
     }
+
+    .difficulty-option {
+        min-height: 98px;
+    }
 }
 
 /* =========================================================
@@ -1694,6 +1928,14 @@ img {
 
     .board-wrap {
         width: min(760px, 100%);
+    }
+
+    .difficulty-choice {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .difficulty-option {
+        min-height: 92px;
     }
 }
 
@@ -1829,9 +2071,9 @@ img {
 
     .start-card {
         padding:
-            38px
-            18px
-            28px;
+            34px
+            15px
+            27px;
 
         border-radius: 20px;
     }
@@ -1849,7 +2091,7 @@ img {
     }
 
     .start-card h1 {
-        margin-top: 32px;
+        margin-top: 30px;
 
         font-size: 20px;
     }
@@ -1862,6 +2104,38 @@ img {
 
     .choice {
         min-height: 56px;
+    }
+
+    .difficulty-section {
+        margin-top: 19px;
+    }
+
+    .difficulty-heading {
+        font-size: 8px;
+    }
+
+    .difficulty-choice {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 7px;
+    }
+
+    .difficulty-option {
+        min-height: 94px;
+
+        padding: 10px 6px;
+    }
+
+    .difficulty-icon {
+        font-size: 20px;
+    }
+
+    .difficulty-name {
+        font-size: 9px;
+    }
+
+    .difficulty-description {
+        font-size: 7px;
     }
 
     .secondary.big {
@@ -1961,6 +2235,29 @@ img {
 
         font-size: 46px;
     }
+
+    .difficulty-choice {
+        gap: 5px;
+    }
+
+    .difficulty-option {
+        min-height: 88px;
+
+        padding:
+            8px 4px;
+    }
+
+    .difficulty-icon {
+        font-size: 18px;
+    }
+
+    .difficulty-name {
+        font-size: 8px;
+    }
+
+    .difficulty-description {
+        font-size: 6.5px;
+    }
 }
 
 /* =========================================================
@@ -1972,7 +2269,8 @@ img {
     .secondary:hover,
     .controls button:hover,
     .danger:hover,
-    .promo-grid button:hover {
+    .promo-grid button:hover,
+    .difficulty-option:hover {
         transform: none;
     }
 
