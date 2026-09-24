@@ -91,7 +91,7 @@ else
                             var selected = selectedSquare == localSq;
                             var target = legalTargets.Contains(localSq);
 
-                            <button class="square @SquareClass(localSq, selected, target)"
+                            <button class="@SquareClass(localSq, selected, target)"
                                     role="gridcell"
                                     disabled="@(paused || thinking)"
                                     aria-label="@SquareAria(localSq, piece)"
@@ -99,11 +99,9 @@ else
 
                                 @if (piece is not null)
                                 {
-                                    <img class="piece"
-                                         src="@PieceUrl(piece)"
-                                         alt="@PieceName(piece)"
-                                         draggable="false"
-                                         loading="eager" />
+                                    <span class="@PieceCssClass(piece)">
+                                        @PieceGlyph(piece)
+                                    </span>
                                 }
 
                                 @if (ChessGame.Col(localSq) == 0)
@@ -464,9 +462,9 @@ else
 
                     <button @onclick="() => Promote(m)">
 
-                        <img class="promo-piece"
-                             src="@PieceUrl(promoted)"
-                             alt="@PieceName(promoted)" />
+                        <span class="promo-piece">
+                            @PieceGlyph(promoted)
+                        </span>
 
                         @PieceName(promoted)
 
@@ -512,9 +510,6 @@ else
         PieceColor.White;
 
     private CancellationTokenSource? computerCts;
-
-    private const string AssetRoot =
-        "https://sashite.dev/assets/chess/sides/";
 
 
     private RenderFragment ComputerCard =>
@@ -1178,10 +1173,11 @@ else
         bool target)
     {
         var cls =
-            ((ChessGame.Row(sq) +
-              ChessGame.Col(sq)) % 2 == 0)
+            "square " +
+            (((ChessGame.Row(sq) +
+               ChessGame.Col(sq)) % 2 == 0)
                 ? "light"
-                : "dark";
+                : "dark");
 
         if (selected)
         {
@@ -1205,24 +1201,37 @@ else
     }
 
 
-    private string PieceUrl(
+    private static string PieceGlyph(
         Piece p)
     {
-        var side =
-            p.Color == PieceColor.White
-                ? "first"
-                : "second";
+        return p.Color == PieceColor.White
+            ? p.Type switch
+            {
+                PieceType.King => "♔",
+                PieceType.Queen => "♕",
+                PieceType.Rook => "♖",
+                PieceType.Bishop => "♗",
+                PieceType.Knight => "♘",
+                _ => "♙"
+            }
+            : p.Type switch
+            {
+                PieceType.King => "♚",
+                PieceType.Queen => "♛",
+                PieceType.Rook => "♜",
+                PieceType.Bishop => "♝",
+                PieceType.Knight => "♞",
+                _ => "♟"
+            };
+    }
 
-        var file =
-            p.Type
-                .ToString()
-                .ToLowerInvariant() +
-            ".svg";
 
-        return
-            $"{AssetRoot}" +
-            $"{side}/representations/" +
-            $"western/{file}";
+    private static string PieceCssClass(
+        Piece p)
+    {
+        return p.Color == PieceColor.White
+            ? "piece piece-white"
+            : "piece piece-black";
     }
 
 
@@ -1259,32 +1268,6 @@ else
             " ",
             pieces.Select(
                 PieceGlyph));
-    }
-
-
-    private static string PieceGlyph(
-        Piece p)
-    {
-        return p.Type switch
-        {
-            PieceType.King =>
-                "👔",
-
-            PieceType.Queen =>
-                "💅",
-
-            PieceType.Rook =>
-                "🧱",
-
-            PieceType.Bishop =>
-                "📐",
-
-            PieceType.Knight =>
-                "🐴",
-
-            _ =>
-                "🥔"
-        };
     }
 
 
