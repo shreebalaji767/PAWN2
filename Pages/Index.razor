@@ -8,12 +8,21 @@
 {
     <section class="start-screen">
         <div class="start-card">
-            <div class="brand">PAWN<span>²</span></div>
-            <div class="tagline">32 PIECES • 64 SQUARES • 0 BRAIN CELLS</div>
 
-            <h1>WHO DO YOU WANT TO BE?</h1>
+            <div class="brand">
+                PAWN<span>²</span>
+            </div>
+
+            <div class="tagline">
+                32 PIECES • 64 SQUARES • 0 BRAIN CELLS
+            </div>
+
+            <h1>
+                WHO DO YOU WANT TO BE?
+            </h1>
 
             <div class="side-choice">
+
                 <button class="choice white"
                         @onclick="() => StartAsync(PieceColor.White)">
                     ☀ PLAY WHITE
@@ -23,6 +32,7 @@
                         @onclick="() => StartAsync(PieceColor.Black)">
                     🌑 PLAY BLACK
                 </button>
+
             </div>
 
             <button class="secondary big"
@@ -33,6 +43,7 @@
             <p class="free-note">
                 FREE • NO ACCOUNT • NO DATABASE • NO SAVED GAME STATE
             </p>
+
         </div>
     </section>
 }
@@ -41,6 +52,7 @@ else
     <div class="game-shell @(paused ? "is-paused" : "")">
 
         <header class="topbar">
+
             <div>
                 <div class="brand small">
                     PAWN<span>²</span>
@@ -55,6 +67,7 @@ else
                     @onclick="() => showRules = true">
                 📖 HOW TO PLAY
             </button>
+
         </header>
 
         <main class="game-layout">
@@ -66,6 +79,7 @@ else
                 </div>
 
                 <div class="board-wrap">
+
                     <div class="board"
                          role="grid"
                          aria-label="Chess board">
@@ -115,17 +129,24 @@ else
                         }
 
                     </div>
+
+                    @KingMessageBubble
+
                 </div>
 
                 <div class="turn-line">
 
                     @if (game.GameOver)
                     {
-                        <strong>@DisplayResult()</strong>
+                        <strong>
+                            @DisplayResult()
+                        </strong>
                     }
                     else if (thinking)
                     {
-                        <strong>🤖 COMPUTER IS THINKING...</strong>
+                        <strong>
+                            🤖 COMPUTER IS THINKING...
+                        </strong>
                     }
                     else
                     {
@@ -174,9 +195,12 @@ else
                         }
                         else
                         {
-                            @for (int i = 0; i < game.History.Count; i++)
+                            @for (int i = 0;
+                                  i < game.History.Count;
+                                  i++)
                             {
-                                var move = game.History[i];
+                                var move =
+                                    game.History[i];
 
                                 <span>
                                     <b>
@@ -261,7 +285,9 @@ else
                 ×
             </button>
 
-            <h2>📖 HOW TO PLAY</h2>
+            <h2>
+                📖 HOW TO PLAY
+            </h2>
 
             <p>
                 Rules are standard chess.
@@ -283,11 +309,21 @@ else
                 <div>🚨 CEO IN DANGER = Check</div>
                 <div>💀 CEO HAS BEEN FIRED = Checkmate</div>
 
-                <div>THE CEO EVACUATION PLAN = Castling</div>
-                <div>THE POTATO DRIVE-BY = En passant</div>
+                <div>
+                    THE CEO EVACUATION PLAN = Castling
+                </div>
 
-                <div>🥔 POTATO GRADUATION = Promotion</div>
-                <div>NOBODY WON = Stalemate / Draw</div>
+                <div>
+                    THE POTATO DRIVE-BY = En passant
+                </div>
+
+                <div>
+                    🥔 POTATO GRADUATION = Promotion
+                </div>
+
+                <div>
+                    NOBODY WON = Stalemate / Draw
+                </div>
 
             </div>
 
@@ -363,7 +399,9 @@ else
 
         <div class="modal small-modal">
 
-            <h2>🚪 EXIT GAME?</h2>
+            <h2>
+                🚪 EXIT GAME?
+            </h2>
 
             <p>
                 Your current game will be completely discarded.
@@ -395,7 +433,9 @@ else
 
         <div class="modal small-modal">
 
-            <h2>🥔 POTATO GRADUATION</h2>
+            <h2>
+                🥔 POTATO GRADUATION
+            </h2>
 
             <p>
                 Choose the new career.
@@ -456,7 +496,8 @@ else
 
     private readonly List<string> comments = new();
 
-    private PieceColor playerColor = PieceColor.White;
+    private PieceColor playerColor =
+        PieceColor.White;
 
     private CancellationTokenSource? computerCts;
 
@@ -464,81 +505,148 @@ else
         "https://sashite.dev/assets/chess/sides/";
 
 
-    // ============================================================
-    // COMPUTER CARD
-    // ============================================================
+    /*
+     * ============================================================
+     * COMPUTER CARD
+     * ============================================================
+     */
 
-    private RenderFragment ComputerCard => @<div class="computer-card">
+    private RenderFragment ComputerCard =>
+        @<div class="computer-card">
 
-        <div class="robot-head">
+            <div class="robot-head">
 
-            <span>
-                🤖 COMPUTER
-            </span>
+                <span>
+                    🤖 COMPUTER
+                </span>
 
-            <span class="mood">
-                @profile.Mood
-            </span>
+                <span class="mood">
+                    @profile.Mood
+                </span>
 
-        </div>
+            </div>
 
-        <h2>
-            @profile.Name
+            <h2>
+                @profile.Name
 
-            <small>
-                #@ComputerId()
-            </small>
-        </h2>
+                <small>
+                    #@ComputerId()
+                </small>
+            </h2>
 
-        <div class="title">
-            “@profile.Title”
-        </div>
+            <div class="title">
+                “@profile.Title”
+            </div>
 
-        <div class="trait">
-            @profile.Trait
-        </div>
+            <div class="trait">
+                @profile.Trait
+            </div>
 
-        <div class="hidden-trait">
-            @profile.HiddenTrait
-        </div>
+            <div class="hidden-trait">
+                @profile.HiddenTrait
+            </div>
 
-        @Stat("EGO", profile.Ego)
-        @Stat("ANGER", profile.Anger)
-        @Stat("PANIC", profile.Panic)
-        @Stat("CHAOS", profile.Chaos)
-        @Stat("DRAMA", profile.Drama)
-        @Stat("RAGEBAIT", profile.Ragebait)
+            @Stat("EGO", profile.Ego)
+            @Stat("ANGER", profile.Anger)
+            @Stat("PANIC", profile.Panic)
+            @Stat("CHAOS", profile.Chaos)
+            @Stat("DRAMA", profile.Drama)
+            @Stat("RAGEBAIT", profile.Ragebait)
 
-        <div class="bubble">
-            @(comments.LastOrDefault()
-                ?? "I am ready to make this unnecessarily complicated.")
-        </div>
+            <div class="bubble">
+                @(comments.LastOrDefault()
+                    ?? "I am ready to make this unnecessarily complicated.")
+            </div>
 
-    </div>;
+        </div>;
 
 
     private RenderFragment Stat(
         string label,
-        int value) => @<div class="stat">
+        int value) =>
+        @<div class="stat">
 
-        <span>
-            @label
-        </span>
+            <span>
+                @label
+            </span>
 
-        <div class="bar">
-            <i style="width:@value%"></i>
-        </div>
+            <div class="bar">
+                <i style="width:@value%"></i>
+            </div>
 
-        <b>
-            @value%
-        </b>
+            <b>
+                @value%
+            </b>
 
-    </div>;
+        </div>;
 
 
-    // ============================================================
-    // START GAME
-    // ============================================================
+    /*
+     * ============================================================
+     * KING MESSAGE BUBBLE
+     * ============================================================
+     *
+     * This bubble is attached to the computer's actual king square.
+     * It automatically follows the king around the board.
+     */
+
+    private RenderFragment KingMessageBubble =>
+        @if (GetComputerKingSquare() is int kingSquare &&
+             !string.IsNullOrWhiteSpace(
+                 comments.LastOrDefault()))
+        {
+            var row =
+                ChessGame.Row(kingSquare);
+
+            var col =
+                ChessGame.Col(kingSquare);
+
+            var left =
+                (col * 12.5) + 6.25;
+
+            var top =
+                (row * 12.5) - 2.0;
+
+            <div class="king-message"
+                 style="@($"left:{left.ToString(System.Globalization.CultureInfo.InvariantCulture)}%; top:{top.ToString(System.Globalization.CultureInfo.InvariantCulture)}%;")">
+
+                <div class="king-message-text">
+                    @comments.Last()
+                </div>
+
+                <div class="king-message-tail"></div>
+
+            </div>
+        };
+
+
+    private int? GetComputerKingSquare()
+    {
+        var computerColor =
+            ChessGame.Opp(playerColor);
+
+        for (int sq = 0; sq < 64; sq++)
+        {
+            var piece =
+                game.Board[sq];
+
+            if (piece is not null &&
+                piece.Color == computerColor &&
+                piece.Type == PieceType.King)
+            {
+                return sq;
+            }
+        }
+
+        return null;
+    }
+
+
+    /*
+     * ============================================================
+     * START GAME
+     * ============================================================
+     */
 
     private async Task StartAsync(
         PieceColor color)
@@ -549,7 +657,8 @@ else
 
         game.Reset();
 
-        profile = personality.Create();
+        profile =
+            personality.Create();
 
         started = true;
         paused = false;
@@ -574,8 +683,6 @@ else
 
         StateHasChanged();
 
-        // If player chooses BLACK,
-        // computer gets the first move.
         if (color == PieceColor.Black)
         {
             await ComputerTurnAsync();
@@ -589,9 +696,11 @@ else
     }
 
 
-    // ============================================================
-    // EXIT
-    // ============================================================
+    /*
+     * ============================================================
+     * EXIT
+     * ============================================================
+     */
 
     private void Exit()
     {
@@ -612,9 +721,11 @@ else
     }
 
 
-    // ============================================================
-    // PAUSE / RESUME
-    // ============================================================
+    /*
+     * ============================================================
+     * PAUSE / RESUME
+     * ============================================================
+     */
 
     private void PauseResume()
     {
@@ -647,9 +758,11 @@ else
     }
 
 
-    // ============================================================
-    // BOARD CLICK
-    // ============================================================
+    /*
+     * ============================================================
+     * BOARD CLICK
+     * ============================================================
+     */
 
     private void ClickSquare(int sq)
     {
@@ -661,7 +774,8 @@ else
             return;
         }
 
-        var piece = game.Board[sq];
+        var piece =
+            game.Board[sq];
 
         if (selectedSquare is null)
         {
@@ -697,14 +811,14 @@ else
             return;
         }
 
-        // Promotion.
         if (options.Count > 1)
         {
             promotionMoves = options;
             return;
         }
 
-        _ = MakePlayerMoveAsync(options[0]);
+        _ = MakePlayerMoveAsync(
+            options[0]);
     }
 
 
@@ -717,8 +831,10 @@ else
         legalTargets.AddRange(
             game
                 .LegalMoves(playerColor)
-                .Where(m => m.From == sq)
-                .Select(m => m.To));
+                .Where(m =>
+                    m.From == sq)
+                .Select(m =>
+                    m.To));
     }
 
 
@@ -730,30 +846,32 @@ else
     }
 
 
-    // ============================================================
-    // PLAYER MOVE
-    // ============================================================
+    /*
+     * ============================================================
+     * PLAYER MOVE
+     * ============================================================
+     */
 
     private async Task MakePlayerMoveAsync(
         Move move)
     {
         promotionMoves.Clear();
 
-        var note = BuildNotation(move);
+        var note =
+            BuildNotation(move);
 
-        var captured = move.Captured?.Type;
+        var captured =
+            move.Captured?.Type;
 
-        personality.PlayerMove(profile);
+        personality.PlayerMove(
+            profile);
 
         game.Apply(move);
 
-        move.Notation = note;
+        move.Notation =
+            note;
 
         ClearSelection();
-
-        // --------------------------------------------------------
-        // CAPTURE
-        // --------------------------------------------------------
 
         if (captured.HasValue)
         {
@@ -774,43 +892,32 @@ else
                     profile));
         }
 
-        // --------------------------------------------------------
-        // PLAYER CHECKS COMPUTER
-        // --------------------------------------------------------
-
         var computerColor =
             ChessGame.Opp(playerColor);
 
-        if (game.IsInCheck(computerColor))
+        if (game.IsInCheck(
+                computerColor))
         {
-            personality.Checked(profile);
+            personality.Checked(
+                profile);
 
-            personality.UpdateMood(profile);
+            personality.UpdateMood(
+                profile);
 
             AddComment(
                 commentary.Check(true));
         }
 
-        // --------------------------------------------------------
-        // PERSONALITY UPDATE
-        // --------------------------------------------------------
-
-        personality.UpdateMood(profile);
-
-        // --------------------------------------------------------
-        // LONG GAME
-        // --------------------------------------------------------
+        personality.UpdateMood(
+            profile);
 
         if (profile.PlayerMoves >= 25 &&
             profile.PlayerMoves % 10 == 0)
         {
             AddComment(
-                commentary.LongGameReaction(profile));
+                commentary.LongGameReaction(
+                    profile));
         }
-
-        // --------------------------------------------------------
-        // GAME OVER
-        // --------------------------------------------------------
 
         if (game.GameOver)
         {
@@ -827,9 +934,11 @@ else
     }
 
 
-    // ============================================================
-    // COMPUTER TURN
-    // ============================================================
+    /*
+     * ============================================================
+     * COMPUTER TURN
+     * ============================================================
+     */
 
     private async Task ComputerTurnAsync()
     {
@@ -852,34 +961,35 @@ else
 
         StateHasChanged();
 
-        // --------------------------------------------------------
-        // PERSONALITY-BASED THINKING TIME
-        // --------------------------------------------------------
-
         var thinkingTime =
             450 +
             profile.Chaos * 5 +
             random.Next(0, 500);
 
-        // Dramatic computers sometimes take longer.
         if (profile.Drama >= 80)
         {
-            thinkingTime += random.Next(0, 700);
+            thinkingTime +=
+                random.Next(
+                    0,
+                    700);
         }
 
-        // Panicky computers sometimes "think" very quickly.
         if (profile.Panic >= 80)
         {
             thinkingTime =
                 Math.Max(
                     350,
-                    thinkingTime - random.Next(100, 500));
+                    thinkingTime -
+                    random.Next(
+                        100,
+                        500));
         }
 
         try
         {
             await Task.Delay(
-                TimeSpan.FromMilliseconds(thinkingTime),
+                TimeSpan.FromMilliseconds(
+                    thinkingTime),
                 token);
         }
         catch (TaskCanceledException)
@@ -902,7 +1012,8 @@ else
             return;
         }
 
-        personality.ComputerMove(profile);
+        personality.ComputerMove(
+            profile);
 
         var move =
             ai.Choose(
@@ -924,19 +1035,12 @@ else
         var captured =
             move.Captured?.Type;
 
-        // --------------------------------------------------------
-        // COMPUTER MOVE
-        // --------------------------------------------------------
-
         game.Apply(move);
 
-        move.Notation = note;
+        move.Notation =
+            note;
 
         thinking = false;
-
-        // --------------------------------------------------------
-        // CAPTURE
-        // --------------------------------------------------------
 
         if (captured.HasValue)
         {
@@ -951,12 +1055,12 @@ else
         }
         else
         {
-            // Different personalities talk differently.
             if (profile.Ragebait >= 75 &&
                 random.Next(100) < 45)
             {
                 AddComment(
-                    commentary.Rage(profile));
+                    commentary.Rage(
+                        profile));
             }
             else
             {
@@ -967,19 +1071,12 @@ else
             }
         }
 
-        // --------------------------------------------------------
-        // COMPUTER CHECKS PLAYER
-        // --------------------------------------------------------
-
-        if (game.IsInCheck(playerColor))
+        if (game.IsInCheck(
+                playerColor))
         {
             AddComment(
                 commentary.Check(false));
         }
-
-        // --------------------------------------------------------
-        // FOURTH WALL
-        // --------------------------------------------------------
 
         if (game.History.Count % 6 == 0)
         {
@@ -987,26 +1084,16 @@ else
                 commentary.FourthWall());
         }
 
-        // --------------------------------------------------------
-        // LONG GAME
-        // --------------------------------------------------------
-
         if (game.History.Count >= 30 &&
             game.History.Count % 10 == 0)
         {
             AddComment(
-                commentary.LongGameReaction(profile));
+                commentary.LongGameReaction(
+                    profile));
         }
 
-        // --------------------------------------------------------
-        // PERSONALITY EVOLUTION
-        // --------------------------------------------------------
-
-        personality.UpdateMood(profile);
-
-        // --------------------------------------------------------
-        // GAME OVER
-        // --------------------------------------------------------
+        personality.UpdateMood(
+            profile);
 
         if (game.GameOver)
         {
@@ -1017,9 +1104,11 @@ else
     }
 
 
-    // ============================================================
-    // GAME OVER
-    // ============================================================
+    /*
+     * ============================================================
+     * GAME OVER
+     * ============================================================
+     */
 
     private void AddGameOver()
     {
@@ -1040,20 +1129,23 @@ else
     }
 
 
-    // ============================================================
-    // COMMENTARY MANAGEMENT
-    // ============================================================
+    /*
+     * ============================================================
+     * COMMENTARY
+     * ============================================================
+     */
 
-    private void AddComment(string message)
+    private void AddComment(
+        string message)
     {
-        if (string.IsNullOrWhiteSpace(message))
+        if (string.IsNullOrWhiteSpace(
+                message))
         {
             return;
         }
 
         comments.Add(message);
 
-        // Keep memory small.
         while (comments.Count > 30)
         {
             comments.RemoveAt(0);
@@ -1061,15 +1153,18 @@ else
     }
 
 
-    // ============================================================
-    // CHESS NOTATION
-    // ============================================================
+    /*
+     * ============================================================
+     * CHESS NOTATION
+     * ============================================================
+     */
 
     private string BuildNotation(
         Move move)
     {
         var p =
-            game.Board[move.From]!;
+            game.Board[
+                move.From]!;
 
         if (move.IsCastle)
         {
@@ -1089,8 +1184,10 @@ else
             move.Captured != null)
         {
             sb.Append(
-                (char)('a' +
-                ChessGame.Col(move.From)));
+                (char)(
+                    'a' +
+                    ChessGame.Col(
+                        move.From)));
         }
 
         if (move.Captured != null)
@@ -1119,11 +1216,14 @@ else
     }
 
 
-    // ============================================================
-    // PROMOTION
-    // ============================================================
+    /*
+     * ============================================================
+     * PROMOTION
+     * ============================================================
+     */
 
-    private void Promote(Move move)
+    private void Promote(
+        Move move)
     {
         _ = PromoteAsync(move);
     }
@@ -1132,13 +1232,16 @@ else
     private async Task PromoteAsync(
         Move move)
     {
-        await MakePlayerMoveAsync(move);
+        await MakePlayerMoveAsync(
+            move);
     }
 
 
-    // ============================================================
-    // BOARD CSS CLASSES
-    // ============================================================
+    /*
+     * ============================================================
+     * BOARD CSS CLASSES
+     * ============================================================
+     */
 
     private string SquareClass(
         int sq,
@@ -1161,9 +1264,10 @@ else
             cls += " target";
         }
 
-        if (game.IsInCheck(game.Turn) &&
+        if (game.IsInCheck(
+                game.Turn) &&
             game.Board[sq]?.Type ==
-            PieceType.King)
+                PieceType.King)
         {
             cls += " check";
         }
@@ -1172,11 +1276,14 @@ else
     }
 
 
-    // ============================================================
-    // ONLINE PIECES
-    // ============================================================
+    /*
+     * ============================================================
+     * ONLINE PIECES
+     * ============================================================
+     */
 
-    private string PieceUrl(Piece p)
+    private string PieceUrl(
+        Piece p)
     {
         var side =
             p.Color == PieceColor.White
@@ -1196,9 +1303,11 @@ else
     }
 
 
-    // ============================================================
-    // PIECE NAMES
-    // ============================================================
+    /*
+     * ============================================================
+     * PIECE NAMES
+     * ============================================================
+     */
 
     private static string PieceName(
         Piece p)
@@ -1226,16 +1335,19 @@ else
     }
 
 
-    // ============================================================
-    // CAPTURE DISPLAY
-    // ============================================================
+    /*
+     * ============================================================
+     * CAPTURE DISPLAY
+     * ============================================================
+     */
 
     private static string Captured(
         IEnumerable<Piece> pieces)
     {
         return string.Join(
             " ",
-            pieces.Select(PieceGlyph));
+            pieces.Select(
+                PieceGlyph));
     }
 
 
@@ -1244,19 +1356,32 @@ else
     {
         return p.Type switch
         {
-            PieceType.King => "👔",
-            PieceType.Queen => "💅",
-            PieceType.Rook => "🧱",
-            PieceType.Bishop => "📐",
-            PieceType.Knight => "🐴",
-            _ => "🥔"
+            PieceType.King =>
+                "👔",
+
+            PieceType.Queen =>
+                "💅",
+
+            PieceType.Rook =>
+                "🧱",
+
+            PieceType.Bishop =>
+                "📐",
+
+            PieceType.Knight =>
+                "🐴",
+
+            _ =>
+                "🥔"
         };
     }
 
 
-    // ============================================================
-    // COMPUTER ID
-    // ============================================================
+    /*
+     * ============================================================
+     * COMPUTER ID
+     * ============================================================
+     */
 
     private string ComputerId()
     {
@@ -1271,9 +1396,11 @@ else
     }
 
 
-    // ============================================================
-    // ACCESSIBILITY
-    // ============================================================
+    /*
+     * ============================================================
+     * ACCESSIBILITY
+     * ============================================================
+     */
 
     private string SquareAria(
         int sq,
@@ -1281,25 +1408,31 @@ else
     {
         return
             $"{ChessGame.SquareName(sq)} " +
-            $"{(p is null ? "empty" : PieceName(p))}";
+            $"{(p is null
+                ? "empty"
+                : PieceName(p))}";
     }
 
 
-    // ============================================================
-    // RESULT
-    // ============================================================
+    /*
+     * ============================================================
+     * RESULT
+     * ============================================================
+     */
 
     private string DisplayResult()
     {
         return game.Result switch
         {
             "WHITE CHECKMATE" =>
-                playerColor == PieceColor.White
+                playerColor ==
+                PieceColor.White
                     ? "🏆 YOU WIN — CEO HAS BEEN FIRED"
                     : "💀 YOU LOST — CEO HAS BEEN FIRED",
 
             "BLACK CHECKMATE" =>
-                playerColor == PieceColor.Black
+                playerColor ==
+                PieceColor.Black
                     ? "🏆 YOU WIN — CEO HAS BEEN FIRED"
                     : "💀 YOU LOST — CEO HAS BEEN FIRED",
 
@@ -1309,9 +1442,11 @@ else
     }
 
 
-    // ============================================================
-    // COMPUTER CANCELLATION
-    // ============================================================
+    /*
+     * ============================================================
+     * CANCELLATION
+     * ============================================================
+     */
 
     private void CancelComputer()
     {
@@ -1331,9 +1466,11 @@ else
     }
 
 
-    // ============================================================
-    // DISPOSE
-    // ============================================================
+    /*
+     * ============================================================
+     * DISPOSE
+     * ============================================================
+     */
 
     public void Dispose()
     {
