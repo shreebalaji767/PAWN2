@@ -7,31 +7,39 @@ public sealed class ComputerPlayer
 {
     private readonly Random rng = new();
 
-    public Move? Choose(ChessGame game, ComputerProfile profile)
+    public Move? Choose(
+        ChessGame game,
+        ComputerProfile profile)
     {
-        var legalMoves = game
-            .LegalMoves(game.Turn)
-            .ToList();
+        var legalMoves =
+            game
+                .LegalMoves(game.Turn)
+                .ToList();
 
         if (legalMoves.Count == 0)
         {
             return null;
         }
 
-        var scored = new List<(Move Move, double Score)>();
+        var scored =
+            new List<(Move Move, double Score)>();
 
         foreach (var move in legalMoves)
         {
-            double score = EvaluateMove(
-                game,
-                move,
-                profile);
+            var score =
+                EvaluateMove(
+                    game,
+                    move,
+                    profile);
 
             score +=
                 rng.NextDouble() *
-                (profile.Chaos / 10.0);
+                Math.Max(
+                    1,
+                    profile.Chaos / 8.0);
 
-            scored.Add((move, score));
+            scored.Add(
+                (move, score));
         }
 
         scored.Sort(
@@ -40,20 +48,33 @@ public sealed class ComputerPlayer
 
         int selectionRange;
 
-        if (profile.Chaos >= 85)
+        if (profile.Chaos >= 92)
         {
             selectionRange =
-                Math.Min(5, scored.Count);
+                Math.Min(
+                    6,
+                    scored.Count);
         }
-        else if (profile.Chaos >= 65)
+        else if (profile.Chaos >= 80)
         {
             selectionRange =
-                Math.Min(3, scored.Count);
+                Math.Min(
+                    4,
+                    scored.Count);
+        }
+        else if (profile.Chaos >= 60)
+        {
+            selectionRange =
+                Math.Min(
+                    3,
+                    scored.Count);
         }
         else
         {
             selectionRange =
-                Math.Min(2, scored.Count);
+                Math.Min(
+                    2,
+                    scored.Count);
         }
 
         return scored[
@@ -76,69 +97,95 @@ public sealed class ComputerPlayer
             return -999999;
         }
 
-        // --------------------------------------------------------
-        // CAPTURES
-        // --------------------------------------------------------
+        /*
+         * MATERIAL
+         */
 
         if (move.Captured is not null)
         {
-            score +=
+            var capturedValue =
                 PieceValue(
                     move.Captured.Type);
 
+            score += capturedValue;
+
             score +=
-                p.Greed * 0.25;
+                p.Greed * 0.30;
 
             if (p.Greedy)
             {
                 score +=
-                    PieceValue(
-                        move.Captured.Type) * 0.35;
+                    capturedValue * 0.40;
             }
 
             if (move.Captured.Type ==
                 PieceType.Queen)
             {
-                score += 100;
+                score += 150;
+            }
+
+            if (move.Captured.Type ==
+                PieceType.Knight &&
+                p.HorseObsessed)
+            {
+                score += 25;
+            }
+
+            if (move.Captured.Type ==
+                PieceType.Pawn &&
+                p.PotatoFanatic)
+            {
+                score += 18;
             }
         }
 
-        // --------------------------------------------------------
-        // HORSE OBSESSION
-        // --------------------------------------------------------
+        /*
+         * HORSE OBSESSION
+         */
 
         if (piece.Type ==
             PieceType.Knight &&
             p.HorseObsessed)
         {
-            score += 18;
+            score += 22;
         }
 
-        // --------------------------------------------------------
-        // QUEEN PROTECTION
-        // --------------------------------------------------------
+        /*
+         * QUEEN PROTECTION
+         */
 
         if (piece.Type ==
             PieceType.Queen &&
             p.QueenProtector)
         {
-            score -= 10;
+            score -= 8;
         }
 
-        // --------------------------------------------------------
-        // RISK
-        // --------------------------------------------------------
+        /*
+         * POTATO FANATIC
+         */
+
+        if (piece.Type ==
+            PieceType.Pawn &&
+            p.PotatoFanatic)
+        {
+            score += 10;
+        }
+
+        /*
+         * RISK
+         */
 
         if (move.Captured is not null)
         {
             score +=
-                p.Risk * 0.15;
+                p.Risk * 0.20;
         }
 
-        if (p.Risk > 70)
+        if (p.Risk >= 75)
         {
             score +=
-                rng.NextDouble() * 15;
+                rng.NextDouble() * 18;
         }
 
         if (p.Coward)
@@ -146,7 +193,7 @@ public sealed class ComputerPlayer
             score -=
                 AttackExposure(
                     game,
-                    move) * 0.8;
+                    move) * 1.1;
         }
 
         if (p.NoFear)
@@ -154,93 +201,110 @@ public sealed class ComputerPlayer
             score +=
                 AttackExposure(
                     game,
-                    move) * 0.35;
+                    move) * 0.45;
         }
 
-        // --------------------------------------------------------
-        // CHAOS
-        // --------------------------------------------------------
+        /*
+         * EGO
+         */
 
-        if (p.Chaos > 75)
-        {
-            score +=
-                rng.NextDouble() * 20;
-        }
-
-        if (p.Chaos > 90)
-        {
-            score +=
-                rng.Next(-8, 15);
-        }
-
-        // --------------------------------------------------------
-        // EGO
-        // --------------------------------------------------------
-
-        if (p.Ego > 80)
+        if (p.Ego >= 80)
         {
             score +=
                 AttackPressure(
                     game,
-                    move) * 0.35;
+                    move) * 0.55;
         }
 
-        if (p.Confidence < 30)
+        /*
+         * CONFIDENCE
+         */
+
+        if (p.Confidence >= 80)
+        {
+            score +=
+                AttackPressure(
+                    game,
+                    move) * 0.20;
+        }
+
+        if (p.Confidence <= 30)
         {
             score -=
                 AttackPressure(
                     game,
-                    move) * 0.2;
+                    move) * 0.30;
         }
 
-        // --------------------------------------------------------
-        // RAGEBAIT
-        // --------------------------------------------------------
+        /*
+         * RAGEBAIT
+         */
 
-        if (p.Ragebait > 75)
+        if (p.Ragebait >= 75)
         {
             score +=
                 AttackPressure(
                     game,
-                    move) * 0.45;
+                    move) * 0.65;
         }
 
-        // --------------------------------------------------------
-        // DRAMA
-        // --------------------------------------------------------
+        /*
+         * DRAMA
+         */
 
-        if (p.Drama > 75)
+        if (p.Drama >= 75)
         {
             if (move.Captured is not null)
             {
-                score += 8;
+                score += 10;
+            }
+
+            if (piece.Type ==
+                PieceType.Queen)
+            {
+                score += 5;
             }
         }
 
-        // --------------------------------------------------------
-        // GREED
-        // --------------------------------------------------------
+        /*
+         * GREED
+         */
 
-        if (p.Greed > 75 &&
+        if (p.Greed >= 75 &&
             move.Captured is not null)
         {
-            score += 20;
+            score += 25;
         }
 
-        // --------------------------------------------------------
-        // POTATO FANATIC
-        // --------------------------------------------------------
+        /*
+         * PATIENCE
+         */
 
-        if (p.PotatoFanatic &&
-            piece.Type ==
-            PieceType.Pawn)
+        if (p.Patience >= 80 &&
+            move.Captured is null)
         {
-            score += 10;
+            score += 3;
         }
 
-        // --------------------------------------------------------
-        // PERSONALITY RANDOMNESS
-        // --------------------------------------------------------
+        /*
+         * CHAOS
+         */
+
+        if (p.Chaos >= 75)
+        {
+            score +=
+                rng.NextDouble() * 22;
+        }
+
+        if (p.Chaos >= 92)
+        {
+            score +=
+                rng.Next(-12, 18);
+        }
+
+        /*
+         * PERSONALITY NOISE
+         */
 
         score +=
             rng.NextDouble() * 5;
@@ -273,25 +337,34 @@ public sealed class ComputerPlayer
         {
             value +=
                 PieceValue(
-                    move.Captured.Type) / 100.0;
+                    move.Captured.Type) /
+                100.0;
         }
 
         var piece =
             game.Board[move.From];
 
-        if (piece is not null)
+        if (piece is null)
         {
-            if (piece.Type ==
-                PieceType.Queen)
-            {
-                value += 2;
-            }
+            return value;
+        }
 
-            if (piece.Type ==
-                PieceType.Knight)
-            {
-                value += 1.5;
-            }
+        if (piece.Type ==
+            PieceType.Queen)
+        {
+            value += 2.5;
+        }
+
+        if (piece.Type ==
+            PieceType.Knight)
+        {
+            value += 1.8;
+        }
+
+        if (piece.Type ==
+            PieceType.Rook)
+        {
+            value += 1.2;
         }
 
         return value;
@@ -309,26 +382,14 @@ public sealed class ComputerPlayer
             return 0;
         }
 
-        double exposure = 0;
-
-        if (piece.Type ==
-            PieceType.Queen)
+        return piece.Type switch
         {
-            exposure += 3;
-        }
-
-        if (piece.Type ==
-            PieceType.Rook)
-        {
-            exposure += 2;
-        }
-
-        if (piece.Type ==
-            PieceType.Knight)
-        {
-            exposure += 1;
-        }
-
-        return exposure;
+            PieceType.Queen => 3.5,
+            PieceType.Rook => 2.5,
+            PieceType.Bishop => 1.7,
+            PieceType.Knight => 1.4,
+            PieceType.Pawn => 0.5,
+            _ => 0
+        };
     }
 }
