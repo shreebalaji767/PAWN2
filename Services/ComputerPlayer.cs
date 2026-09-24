@@ -21,6 +21,14 @@ public sealed class ComputerPlayer
             return null;
         }
 
+        /*
+         * Only one legal move.
+         */
+        if (legalMoves.Count == 1)
+        {
+            return legalMoves[0];
+        }
+
         var scored =
             new List<(Move Move, double Score)>();
 
@@ -32,11 +40,42 @@ public sealed class ComputerPlayer
                     move,
                     profile);
 
-            score +=
+            /*
+             * Personality-specific randomness.
+             *
+             * High chaos means the computer is less predictable.
+             * Low chaos means it tends to choose the objectively
+             * better-scoring move.
+             */
+            var chaosNoise =
                 rng.NextDouble() *
                 Math.Max(
-                    1,
-                    profile.Chaos / 8.0);
+                    0.5,
+                    profile.Chaos / 7.0);
+
+            score += chaosNoise;
+
+            /*
+             * High ragebait personalities deliberately like
+             * provocative attacking moves.
+             */
+            if (profile.Ragebait >= 80)
+            {
+                score +=
+                    rng.NextDouble() *
+                    (profile.Ragebait / 12.0);
+            }
+
+            /*
+             * Very confident personalities have less randomness.
+             * They believe their top choice is correct.
+             */
+            if (profile.Confidence >= 85)
+            {
+                score +=
+                    rng.NextDouble() *
+                    2.5;
+            }
 
             scored.Add(
                 (move, score));
@@ -46,40 +85,112 @@ public sealed class ComputerPlayer
             (a, b) =>
                 b.Score.CompareTo(a.Score));
 
-        int selectionRange;
+        var selectionRange =
+            CalculateSelectionRange(
+                scored.Count,
+                profile);
 
-        if (profile.Chaos >= 92)
-        {
-            selectionRange =
-                Math.Min(
-                    6,
-                    scored.Count);
-        }
-        else if (profile.Chaos >= 80)
-        {
-            selectionRange =
-                Math.Min(
-                    4,
-                    scored.Count);
-        }
-        else if (profile.Chaos >= 60)
-        {
-            selectionRange =
-                Math.Min(
-                    3,
-                    scored.Count);
-        }
-        else
-        {
-            selectionRange =
-                Math.Min(
-                    2,
-                    scored.Count);
-        }
-
+        /*
+         * Occasionally a personality will deliberately choose
+         * something other than the absolute top move.
+         *
+         * This is what gives PAWN² its personality instead of
+         * making every computer opponent play identically.
+         */
         return scored[
             rng.Next(selectionRange)
         ].Move;
+    }
+
+    private int CalculateSelectionRange(
+        int moveCount,
+        ComputerProfile p)
+    {
+        /*
+         * Base range from chaos.
+         */
+        int range;
+
+        if (p.Chaos >= 95)
+        {
+            range = 7;
+        }
+        else if (p.Chaos >= 85)
+        {
+            range = 5;
+        }
+        else if (p.Chaos >= 70)
+        {
+            range = 4;
+        }
+        else if (p.Chaos >= 50)
+        {
+            range = 3;
+        }
+        else if (p.Chaos >= 30)
+        {
+            range = 2;
+        }
+        else
+        {
+            range = 1;
+        }
+
+        /*
+         * Patience makes the computer more selective.
+         */
+        if (p.Patience >= 85)
+        {
+            range--;
+        }
+
+        /*
+         * Confidence makes it trust the best move.
+         */
+        if (p.Confidence >= 90)
+        {
+            range--;
+        }
+
+        /*
+         * Panic can make the computer choose more erratically.
+         */
+        if (p.Panic >= 80)
+        {
+            range++;
+        }
+
+        /*
+         * Ragebait personalities like alternatives.
+         */
+        if (p.Ragebait >= 90)
+        {
+            range++;
+        }
+
+        /*
+         * No Fear personalities are willing to choose risky
+         * alternatives.
+         */
+        if (p.NoFear)
+        {
+            range++;
+        }
+
+        /*
+         * Cowards prefer the safest/highest scoring option.
+         */
+        if (p.Coward)
+        {
+            range--;
+        }
+
+        return Math.Clamp(
+            range,
+            1,
+            Math.Min(
+                7,
+                moveCount));
     }
 
     private double EvaluateMove(
@@ -98,7 +209,9 @@ public sealed class ComputerPlayer
         }
 
         /*
+         * ---------------------------------------------------------
          * MATERIAL
+         * ---------------------------------------------------------
          */
 
         if (move.Captured is not null)
@@ -109,21 +222,49 @@ public sealed class ComputerPlayer
 
             score += capturedValue;
 
+            /*
+             * General greed.
+             */
             score +=
                 p.Greed * 0.30;
 
+            /*
+             * Strongly greedy personality.
+             */
             if (p.Greedy)
             {
                 score +=
                     capturedValue * 0.40;
             }
 
+            /*
+             * High material value gets increasingly attractive
+             * to materialistic personalities.
+             */
+            if (p.Greed >= 80)
+            {
+                score +=
+                    capturedValue *
+                    0.15;
+            }
+
+            /*
+             * Queen capture is naturally extremely valuable.
+             */
             if (move.Captured.Type ==
                 PieceType.Queen)
             {
                 score += 150;
+
+                if (p.Greed >= 80)
+                {
+                    score += 50;
+                }
             }
 
+            /*
+             * Horse obsession.
+             */
             if (move.Captured.Type ==
                 PieceType.Knight &&
                 p.HorseObsessed)
@@ -131,6 +272,9 @@ public sealed class ComputerPlayer
                 score += 25;
             }
 
+            /*
+             * Potato fanatic.
+             */
             if (move.Captured.Type ==
                 PieceType.Pawn &&
                 p.PotatoFanatic)
@@ -140,7 +284,9 @@ public sealed class ComputerPlayer
         }
 
         /*
-         * HORSE OBSESSION
+         * ---------------------------------------------------------
+         * PIECE PERSONALITY
+         * ---------------------------------------------------------
          */
 
         if (piece.Type ==
@@ -150,62 +296,83 @@ public sealed class ComputerPlayer
             score += 22;
         }
 
-        /*
-         * QUEEN PROTECTION
-         */
-
         if (piece.Type ==
             PieceType.Queen &&
             p.QueenProtector)
         {
+            /*
+             * Queen protector dislikes throwing the queen into
+             * dangerous positions.
+             */
             score -= 8;
-        }
 
-        /*
-         * POTATO FANATIC
-         */
+            score -=
+                AttackExposure(
+                    game,
+                    move) * 1.2;
+        }
 
         if (piece.Type ==
             PieceType.Pawn &&
             p.PotatoFanatic)
         {
             score += 10;
+
+            /*
+             * Stronger potato personalities get an additional
+             * preference for pawn activity.
+             */
+            if (p.Drama >= 75)
+            {
+                score += 5;
+            }
         }
 
         /*
-         * RISK
+         * ---------------------------------------------------------
+         * RISK PERSONALITY
+         * ---------------------------------------------------------
          */
 
-        if (move.Captured is not null)
-        {
-            score +=
-                p.Risk * 0.20;
-        }
-
-        if (p.Risk >= 75)
-        {
-            score +=
-                rng.NextDouble() * 18;
-        }
+        var exposure =
+            AttackExposure(
+                game,
+                move);
 
         if (p.Coward)
         {
             score -=
-                AttackExposure(
-                    game,
-                    move) * 1.1;
+                exposure *
+                (1.0 +
+                 p.Panic / 100.0);
         }
 
         if (p.NoFear)
         {
             score +=
-                AttackExposure(
-                    game,
-                    move) * 0.45;
+                exposure *
+                (0.35 +
+                 p.Risk / 200.0);
+        }
+
+        if (p.Risk >= 75)
+        {
+            score +=
+                rng.NextDouble() *
+                15;
+        }
+
+        if (p.Risk >= 90)
+        {
+            score +=
+                exposure *
+                0.75;
         }
 
         /*
+         * ---------------------------------------------------------
          * EGO
+         * ---------------------------------------------------------
          */
 
         if (p.Ego >= 80)
@@ -213,11 +380,23 @@ public sealed class ComputerPlayer
             score +=
                 AttackPressure(
                     game,
-                    move) * 0.55;
+                    move) *
+                0.55;
+        }
+
+        if (p.Ego >= 92)
+        {
+            score +=
+                AttackPressure(
+                    game,
+                    move) *
+                0.40;
         }
 
         /*
+         * ---------------------------------------------------------
          * CONFIDENCE
+         * ---------------------------------------------------------
          */
 
         if (p.Confidence >= 80)
@@ -225,7 +404,15 @@ public sealed class ComputerPlayer
             score +=
                 AttackPressure(
                     game,
-                    move) * 0.20;
+                    move) *
+                0.20;
+        }
+
+        if (p.Confidence >= 92)
+        {
+            score +=
+                rng.NextDouble() *
+                3;
         }
 
         if (p.Confidence <= 30)
@@ -233,11 +420,41 @@ public sealed class ComputerPlayer
             score -=
                 AttackPressure(
                     game,
-                    move) * 0.30;
+                    move) *
+                0.30;
         }
 
         /*
+         * ---------------------------------------------------------
+         * PANIC
+         * ---------------------------------------------------------
+         */
+
+        if (p.Panic >= 70)
+        {
+            /*
+             * Panicked computers prefer captures because removing
+             * an enemy piece feels safer.
+             */
+            if (move.Captured is not null)
+            {
+                score +=
+                    8 +
+                    p.Panic * 0.10;
+            }
+
+            /*
+             * But extremely panicky personalities become noisy.
+             */
+            score +=
+                rng.NextDouble() *
+                (p.Panic / 12.0);
+        }
+
+        /*
+         * ---------------------------------------------------------
          * RAGEBAIT
+         * ---------------------------------------------------------
          */
 
         if (p.Ragebait >= 75)
@@ -245,11 +462,25 @@ public sealed class ComputerPlayer
             score +=
                 AttackPressure(
                     game,
-                    move) * 0.65;
+                    move) *
+                0.65;
+        }
+
+        if (p.Ragebait >= 90)
+        {
+            score +=
+                exposure *
+                0.50;
+
+            score +=
+                rng.NextDouble() *
+                8;
         }
 
         /*
+         * ---------------------------------------------------------
          * DRAMA
+         * ---------------------------------------------------------
          */
 
         if (p.Drama >= 75)
@@ -264,10 +495,19 @@ public sealed class ComputerPlayer
             {
                 score += 5;
             }
+
+            if (p.Drama >= 90)
+            {
+                score +=
+                    rng.NextDouble() *
+                    10;
+            }
         }
 
         /*
+         * ---------------------------------------------------------
          * GREED
+         * ---------------------------------------------------------
          */
 
         if (p.Greed >= 75 &&
@@ -276,8 +516,16 @@ public sealed class ComputerPlayer
             score += 25;
         }
 
+        if (p.Greed >= 90 &&
+            move.Captured is not null)
+        {
+            score += 20;
+        }
+
         /*
+         * ---------------------------------------------------------
          * PATIENCE
+         * ---------------------------------------------------------
          */
 
         if (p.Patience >= 80 &&
@@ -286,14 +534,34 @@ public sealed class ComputerPlayer
             score += 3;
         }
 
+        if (p.Patience >= 90 &&
+            move.Captured is null)
+        {
+            score += 5;
+        }
+
         /*
+         * Patient personalities dislike completely random
+         * tactical nonsense.
+         */
+        if (p.Patience >= 85)
+        {
+            score -=
+                rng.NextDouble() *
+                2;
+        }
+
+        /*
+         * ---------------------------------------------------------
          * CHAOS
+         * ---------------------------------------------------------
          */
 
         if (p.Chaos >= 75)
         {
             score +=
-                rng.NextDouble() * 22;
+                rng.NextDouble() *
+                22;
         }
 
         if (p.Chaos >= 92)
@@ -303,11 +571,127 @@ public sealed class ComputerPlayer
         }
 
         /*
-         * PERSONALITY NOISE
+         * ---------------------------------------------------------
+         * HELPFULNESS
+         * ---------------------------------------------------------
+         *
+         * Helpful personalities are less interested in ragebait
+         * behavior and slightly prefer sensible moves.
+         */
+        if (p.Helpfulness >= 35)
+        {
+            score +=
+                Math.Max(
+                    0,
+                    p.Patience - 50) *
+                0.05;
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * SPECIAL PERSONALITY COMBINATIONS
+         * ---------------------------------------------------------
          */
 
+        /*
+         * Aggressive + confident.
+         */
+        if (p.Risk >= 75 &&
+            p.Confidence >= 75)
+        {
+            score +=
+                AttackPressure(
+                    game,
+                    move) *
+                0.45;
+        }
+
+        /*
+         * Defensive + patient.
+         */
+        if (p.Risk <= 30 &&
+            p.Patience >= 75)
+        {
+            score -=
+                exposure *
+                0.45;
+        }
+
+        /*
+         * Angry + ragebaiting.
+         */
+        if (p.Anger >= 75 &&
+            p.Ragebait >= 75)
+        {
+            score +=
+                AttackPressure(
+                    game,
+                    move) *
+                0.50;
+        }
+
+        /*
+         * Greedy + high confidence.
+         */
+        if (p.Greed >= 80 &&
+            p.Confidence >= 80 &&
+            move.Captured is not null)
+        {
+            score += 15;
+        }
+
+        /*
+         * Panic + coward.
+         */
+        if (p.Panic >= 70 &&
+            p.Coward)
+        {
+            score -=
+                exposure *
+                0.75;
+        }
+
+        /*
+         * Chaos + no fear.
+         */
+        if (p.Chaos >= 80 &&
+            p.NoFear)
+        {
+            score +=
+                rng.NextDouble() *
+                20;
+        }
+
+        /*
+         * Horse obsession + chaos.
+         */
+        if (p.HorseObsessed &&
+            p.Chaos >= 70 &&
+            piece.Type == PieceType.Knight)
+        {
+            score +=
+                rng.NextDouble() *
+                12;
+        }
+
+        /*
+         * Potato fanatic + drama.
+         */
+        if (p.PotatoFanatic &&
+            p.Drama >= 75 &&
+            piece.Type == PieceType.Pawn)
+        {
+            score +=
+                rng.NextDouble() *
+                10;
+        }
+
+        /*
+         * Final small personality noise.
+         */
         score +=
-            rng.NextDouble() * 5;
+            rng.NextDouble() *
+            5;
 
         return score;
     }
@@ -367,6 +751,18 @@ public sealed class ComputerPlayer
             value += 1.2;
         }
 
+        if (piece.Type ==
+            PieceType.Bishop)
+        {
+            value += 1.0;
+        }
+
+        if (piece.Type ==
+            PieceType.Pawn)
+        {
+            value += 0.4;
+        }
+
         return value;
     }
 
@@ -389,6 +785,7 @@ public sealed class ComputerPlayer
             PieceType.Bishop => 1.7,
             PieceType.Knight => 1.4,
             PieceType.Pawn => 0.5,
+            PieceType.King => 4.0,
             _ => 0
         };
     }
