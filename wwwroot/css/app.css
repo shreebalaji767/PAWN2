@@ -193,24 +193,30 @@ button {
 
 
 /* =========================================================
-   LARGE RESPONSIVE CHESS BOARD
+   CHESS BOARD
    ========================================================= */
 
 .board-wrap {
-    width: min(
-        100%,
-        92vh
-    );
-
+    width: min(100%, 92vh);
     max-width: 900px;
-
     margin: 0 auto;
 }
 
 .board {
     width: 100%;
+
+    /*
+       IMPORTANT:
+       The board has exactly 8 equal columns
+       and exactly 8 equal rows.
+
+       The rows MUST be explicitly defined.
+       Otherwise pieces inside occupied rows can
+       influence the automatic row sizing.
+    */
     display: grid;
     grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
 
     aspect-ratio: 1 / 1;
 
@@ -226,16 +232,21 @@ button {
 .square {
     position: relative;
 
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
     border: 0;
     padding: 0;
 
     display: grid;
     place-items: center;
 
-    min-width: 0;
-    min-height: 0;
-
     cursor: pointer;
+
+    overflow: hidden;
 }
 
 .square.light {
@@ -248,6 +259,10 @@ button {
 
 .square:hover {
     filter: brightness(1.07);
+}
+
+.square:disabled {
+    cursor: default;
 }
 
 .square.selected {
@@ -264,21 +279,19 @@ button {
     cursor: pointer;
 }
 
-.move-dot {
-    width: 18%;
-    aspect-ratio: 1;
 
-    border-radius: 50%;
-
-    background: #161a22aa;
-
-    position: absolute;
-    z-index: 2;
-}
+/* =========================================================
+   CHESS PIECES
+   ========================================================= */
 
 .piece {
+    display: block;
+
     width: 84%;
     height: 84%;
+
+    max-width: 84%;
+    max-height: 84%;
 
     object-fit: contain;
 
@@ -287,10 +300,34 @@ button {
     user-select: none;
     pointer-events: none;
 
-    filter: drop-shadow(
-        0 4px 2px #0005
-    );
+    filter:
+        drop-shadow(0 4px 2px #0005);
 }
+
+
+/* =========================================================
+   LEGAL MOVE INDICATOR
+   ========================================================= */
+
+.move-dot {
+    position: absolute;
+
+    width: 18%;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 50%;
+
+    background: #161a22aa;
+
+    z-index: 2;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   BOARD COORDINATES
+   ========================================================= */
 
 .rank,
 .file {
@@ -428,12 +465,12 @@ button {
 .trait {
     font-size: 11px;
     color: #d4d9e2;
-
     margin: 10px 0 15px;
 }
 
 .stat {
     display: grid;
+
     grid-template-columns: 72px 1fr 38px;
 
     gap: 7px;
@@ -496,6 +533,7 @@ button {
     max-width: 100%;
 
     word-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 .bubble:before {
@@ -783,7 +821,6 @@ button {
 
         max-width: 820px;
     }
-
 }
 
 
