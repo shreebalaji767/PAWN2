@@ -17,23 +17,134 @@
                 32 PIECES • 64 SQUARES • 0 BRAIN CELLS
             </div>
 
-            <h1>
-                WHO DO YOU WANT TO BE?
-            </h1>
+            <h1>WHO DO YOU WANT TO BE?</h1>
 
             <div class="side-choice">
 
                 <button class="choice white"
-                        @onclick="() => StartAsync(PieceColor.White)">
+                        @onclick="() => selectedSide = PieceColor.White"
+                        disabled="@(selectedSide == PieceColor.White)">
                     ☀ PLAY WHITE
                 </button>
 
                 <button class="choice black"
-                        @onclick="() => StartAsync(PieceColor.Black)">
+                        @onclick="() => selectedSide = PieceColor.Black"
+                        disabled="@(selectedSide == PieceColor.Black)">
                     🌑 PLAY BLACK
                 </button>
 
             </div>
+
+            <div class="difficulty-section">
+
+                <h2>HOW SMART SHOULD THE COMPUTER PRETEND TO BE?</h2>
+
+                <div class="difficulty-grid">
+
+                    <button class="difficulty-card easy
+                                   @(selectedDifficulty == DifficultyLevel.Easy
+                                       ? "selected"
+                                       : "")"
+                            @onclick="() => selectedDifficulty = DifficultyLevel.Easy">
+
+                        <div class="difficulty-icon">
+                            🥔
+                        </div>
+
+                        <div class="difficulty-name">
+                            EASY
+                        </div>
+
+                        <div class="difficulty-description">
+                            Makes questionable decisions.
+                        </div>
+
+                        <div class="difficulty-subtitle">
+                            The computer has approximately one brain cell.
+                        </div>
+
+                    </button>
+
+                    <button class="difficulty-card normal
+                                   @(selectedDifficulty == DifficultyLevel.Normal
+                                       ? "selected"
+                                       : "")"
+                            @onclick="() => selectedDifficulty = DifficultyLevel.Normal">
+
+                        <div class="difficulty-icon">
+                            🧠
+                        </div>
+
+                        <div class="difficulty-name">
+                            NORMAL
+                        </div>
+
+                        <div class="difficulty-description">
+                            A reasonably competent opponent.
+                        </div>
+
+                        <div class="difficulty-subtitle">
+                            Still capable of making embarrassing mistakes.
+                        </div>
+
+                    </button>
+
+                    <button class="difficulty-card hard
+                                   @(selectedDifficulty == DifficultyLevel.Hard
+                                       ? "selected"
+                                       : "")"
+                            @onclick="() => selectedDifficulty = DifficultyLevel.Hard">
+
+                        <div class="difficulty-icon">
+                            🔥
+                        </div>
+
+                        <div class="difficulty-name">
+                            HARD
+                        </div>
+
+                        <div class="difficulty-description">
+                            Actually starts thinking.
+                        </div>
+
+                        <div class="difficulty-subtitle">
+                            Personality remains. Bad decisions become rarer.
+                        </div>
+
+                    </button>
+
+                    <button class="difficulty-card brutal
+                                   @(selectedDifficulty == DifficultyLevel.Brutal
+                                       ? "selected"
+                                       : "")"
+                            @onclick="() => selectedDifficulty = DifficultyLevel.Brutal">
+
+                        <div class="difficulty-icon">
+                            💀
+                        </div>
+
+                        <div class="difficulty-name">
+                            BRUTAL
+                        </div>
+
+                        <div class="difficulty-description">
+                            You may regret clicking this.
+                        </div>
+
+                        <div class="difficulty-subtitle">
+                            The computer strongly prefers its best move.
+                        </div>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button class="primary start-game-button"
+                    @onclick="StartSelectedGame">
+                ♟ START GAME
+            </button>
 
             <button class="secondary big"
                     @onclick="() => showRules = true">
@@ -54,6 +165,7 @@ else
         <header class="topbar">
 
             <div>
+
                 <div class="brand small">
                     PAWN<span>²</span>
                 </div>
@@ -61,12 +173,22 @@ else
                 <div class="tagline">
                     32 PIECES • 64 SQUARES • 0 BRAIN CELLS
                 </div>
+
             </div>
 
-            <button class="secondary"
-                    @onclick="() => showRules = true">
-                📖 HOW TO PLAY
-            </button>
+            <div class="game-top-actions">
+
+                <div class="difficulty-badge">
+                    @DifficultyIcon(selectedDifficulty)
+                    @DifficultyName(selectedDifficulty)
+                </div>
+
+                <button class="secondary"
+                        @onclick="() => showRules = true">
+                    📖 HOW TO PLAY
+                </button>
+
+            </div>
 
         </header>
 
@@ -91,7 +213,7 @@ else
                             var selected = selectedSquare == localSq;
                             var target = legalTargets.Contains(localSq);
 
-                            <button class="@SquareClass(localSq, selected, target)"
+                            <button class="square @SquareClass(localSq, selected, target)"
                                     role="gridcell"
                                     disabled="@(paused || thinking)"
                                     aria-label="@SquareAria(localSq, piece)"
@@ -99,9 +221,11 @@ else
 
                                 @if (piece is not null)
                                 {
-                                    <span class="@PieceCssClass(piece)">
-                                        @PieceGlyph(piece)
-                                    </span>
+                                    <img class="piece"
+                                         src="@PieceUrl(piece)"
+                                         alt="@PieceName(piece)"
+                                         draggable="false"
+                                         loading="eager" />
                                 }
 
                                 @if (ChessGame.Col(localSq) == 0)
@@ -213,11 +337,13 @@ else
                                 var move = game.History[i];
 
                                 <span>
+
                                     <b>
                                         @(i / 2 + 1)@(i % 2 == 0 ? "." : "...")
                                     </b>
 
                                     @move.Notation
+
                                 </span>
                             }
                         }
@@ -309,31 +435,16 @@ else
 
                 <div>👔 THE CEO = King</div>
                 <div>💅 THE OVERPAID MANAGER = Queen</div>
-
                 <div>🧱 THE OFFICE FRIDGE = Rook</div>
                 <div>📐 THE ACCOUNTANT = Bishop</div>
-
                 <div>🐴 THE UNSTABLE HORSE = Knight</div>
                 <div>🥔 THE POTATO = Pawn</div>
-
                 <div>🚨 CEO IN DANGER = Check</div>
                 <div>💀 CEO HAS BEEN FIRED = Checkmate</div>
-
-                <div>
-                    THE CEO EVACUATION PLAN = Castling
-                </div>
-
-                <div>
-                    THE POTATO DRIVE-BY = En passant
-                </div>
-
-                <div>
-                    🥔 POTATO GRADUATION = Promotion
-                </div>
-
-                <div>
-                    NOBODY WON = Stalemate / Draw
-                </div>
+                <div>THE CEO EVACUATION PLAN = Castling</div>
+                <div>THE POTATO DRIVE-BY = En passant</div>
+                <div>🥔 POTATO GRADUATION = Promotion</div>
+                <div>NOBODY WON = Stalemate / Draw</div>
 
             </div>
 
@@ -368,27 +479,32 @@ else
 
                 <p>
                     <b>Pawn:</b>
-                    forward one, optionally two from
-                    its starting rank; captures diagonally.
+                    forward one, optionally two from its starting rank;
+                    captures diagonally.
                 </p>
 
                 <p>
                     <b>Castling:</b>
-                    legal only when the king and rook
-                    have not moved, the path is clear,
-                    and the king is not in or through check.
+                    legal only when the king and rook have not moved,
+                    the path is clear, and the king is not in or through check.
                 </p>
 
                 <p>
                     <b>Promotion:</b>
-                    a pawn reaching the final rank becomes
-                    a queen, rook, bishop, or knight.
+                    a pawn reaching the final rank becomes a queen,
+                    rook, bishop, or knight.
                 </p>
 
                 <p>
                     <b>En passant:</b>
-                    the special pawn capture immediately
-                    after an opposing two-square pawn move.
+                    the special pawn capture immediately after
+                    an opposing two-square pawn move.
+                </p>
+
+                <p>
+                    <b>Difficulty:</b>
+                    changes how strongly the computer prefers its
+                    highest-scoring moves.
                 </p>
 
             </div>
@@ -462,9 +578,9 @@ else
 
                     <button @onclick="() => Promote(m)">
 
-                        <span class="promo-piece">
-                            @PieceGlyph(promoted)
-                        </span>
+                        <img class="promo-piece"
+                             src="@PieceUrl(promoted)"
+                             alt="@PieceName(promoted)" />
 
                         @PieceName(promoted)
 
@@ -509,8 +625,16 @@ else
     private PieceColor playerColor =
         PieceColor.White;
 
+    private PieceColor selectedSide =
+        PieceColor.White;
+
+    private DifficultyLevel selectedDifficulty =
+        DifficultyLevel.Normal;
+
     private CancellationTokenSource? computerCts;
 
+    private const string AssetRoot =
+        "https://sashite.dev/assets/chess/sides/";
 
     private RenderFragment ComputerCard =>
         @<div class="computer-card">
@@ -527,12 +651,14 @@ else
 
             </div>
 
+            <div class="computer-difficulty">
+                @DifficultyIcon(selectedDifficulty)
+                @DifficultyName(selectedDifficulty)
+            </div>
+
             <h2>
                 @profile.Name
-
-                <small>
-                    #@ComputerId()
-                </small>
+                <small>#@ComputerId()</small>
             </h2>
 
             <div class="title">
@@ -555,12 +681,13 @@ else
             @Stat("RAGEBAIT", profile.Ragebait)
 
             <div class="bubble">
+
                 @(comments.LastOrDefault()
                     ?? "I am ready to make this unnecessarily complicated.")
+
             </div>
 
         </div>;
-
 
     private RenderFragment Stat(
         string label,
@@ -581,56 +708,37 @@ else
 
         </div>;
 
-
-    private int? GetComputerKingSquare()
+    private static string DifficultyName(
+        DifficultyLevel difficulty)
     {
-        var computerColor =
-            ChessGame.Opp(playerColor);
-
-        for (int sq = 0; sq < 64; sq++)
+        return difficulty switch
         {
-            var piece =
-                game.Board[sq];
-
-            if (piece is not null &&
-                piece.Color == computerColor &&
-                piece.Type == PieceType.King)
-            {
-                return sq;
-            }
-        }
-
-        return null;
+            DifficultyLevel.Easy => "EASY",
+            DifficultyLevel.Normal => "NORMAL",
+            DifficultyLevel.Hard => "HARD",
+            DifficultyLevel.Brutal => "BRUTAL",
+            _ => "NORMAL"
+        };
     }
 
-
-    private string KingBubbleStyle(
-        int square)
+    private static string DifficultyIcon(
+        DifficultyLevel difficulty)
     {
-        var row =
-            ChessGame.Row(square);
-
-        var col =
-            ChessGame.Col(square);
-
-        var left =
-            (col * 12.5) + 6.25;
-
-        var top =
-            (row * 12.5) + 2.0;
-
-        var leftText =
-            left.ToString(
-                System.Globalization.CultureInfo.InvariantCulture);
-
-        var topText =
-            top.ToString(
-                System.Globalization.CultureInfo.InvariantCulture);
-
-        return
-            $"left:{leftText}%;top:{topText}%;";
+        return difficulty switch
+        {
+            DifficultyLevel.Easy => "🥔",
+            DifficultyLevel.Normal => "🧠",
+            DifficultyLevel.Hard => "🔥",
+            DifficultyLevel.Brutal => "💀",
+            _ => "🧠"
+        };
     }
 
+    private async Task StartSelectedGame()
+    {
+        await StartAsync(
+            selectedSide);
+    }
 
     private async Task StartAsync(
         PieceColor color)
@@ -645,8 +753,11 @@ else
             personality.Create();
 
         started = true;
+
         paused = false;
+
         thinking = false;
+
         confirmExit = false;
 
         selectedSquare = null;
@@ -658,7 +769,8 @@ else
         comments.Clear();
 
         AddComment(
-            $"Meet {profile.Name}. This will probably go badly.");
+            $"Meet {profile.Name}. " +
+            $"You selected {DifficultyName(selectedDifficulty)}.");
 
         AddComment(
             $"{profile.HiddenTrait}.");
@@ -673,20 +785,22 @@ else
         }
     }
 
-
     private async Task NewGame()
     {
-        await StartAsync(playerColor);
+        await StartAsync(
+            playerColor);
     }
-
 
     private void Exit()
     {
         CancelComputer();
 
         started = false;
+
         paused = false;
+
         thinking = false;
+
         confirmExit = false;
 
         selectedSquare = null;
@@ -697,7 +811,6 @@ else
 
         comments.Clear();
     }
-
 
     private void PauseResume()
     {
@@ -729,8 +842,8 @@ else
         StateHasChanged();
     }
 
-
-    private void ClickSquare(int sq)
+    private void ClickSquare(
+        int sq)
     {
         if (paused ||
             thinking ||
@@ -756,6 +869,7 @@ else
         if (sq == selectedSquare)
         {
             ClearSelection();
+
             return;
         }
 
@@ -780,6 +894,7 @@ else
         if (options.Count > 1)
         {
             promotionMoves = options;
+
             return;
         }
 
@@ -787,8 +902,8 @@ else
             options[0]);
     }
 
-
-    private void Select(int sq)
+    private void Select(
+        int sq)
     {
         selectedSquare = sq;
 
@@ -803,14 +918,12 @@ else
                     m.To));
     }
 
-
     private void ClearSelection()
     {
         selectedSquare = null;
 
         legalTargets.Clear();
     }
-
 
     private async Task MakePlayerMoveAsync(
         Move move)
@@ -893,7 +1006,6 @@ else
         await ComputerTurnAsync();
     }
 
-
     private async Task ComputerTurnAsync()
     {
         CancelComputer();
@@ -916,28 +1028,7 @@ else
         StateHasChanged();
 
         var thinkingTime =
-            450 +
-            profile.Chaos * 5 +
-            random.Next(0, 500);
-
-        if (profile.Drama >= 80)
-        {
-            thinkingTime +=
-                random.Next(
-                    0,
-                    700);
-        }
-
-        if (profile.Panic >= 80)
-        {
-            thinkingTime =
-                Math.Max(
-                    350,
-                    thinkingTime -
-                    random.Next(
-                        100,
-                        500));
-        }
+            GetThinkingTime();
 
         try
         {
@@ -972,7 +1063,8 @@ else
         var move =
             ai.Choose(
                 game,
-                profile);
+                profile,
+                selectedDifficulty);
 
         if (move is null)
         {
@@ -1057,6 +1149,60 @@ else
         StateHasChanged();
     }
 
+    private int GetThinkingTime()
+    {
+        var baseTime =
+            selectedDifficulty switch
+            {
+                DifficultyLevel.Easy => 350,
+                DifficultyLevel.Normal => 600,
+                DifficultyLevel.Hard => 900,
+                DifficultyLevel.Brutal => 1200,
+                _ => 600
+            };
+
+        var personalityVariation =
+            selectedDifficulty switch
+            {
+                DifficultyLevel.Easy => 300,
+                DifficultyLevel.Normal => 450,
+                DifficultyLevel.Hard => 550,
+                DifficultyLevel.Brutal => 700,
+                _ => 450
+            };
+
+        var thinkingTime =
+            baseTime +
+            profile.Chaos *
+            3 +
+            random.Next(
+                0,
+                personalityVariation);
+
+        if (profile.Drama >= 80)
+        {
+            thinkingTime +=
+                random.Next(
+                    0,
+                    selectedDifficulty ==
+                    DifficultyLevel.Brutal
+                        ? 500
+                        : 700);
+        }
+
+        if (profile.Panic >= 80)
+        {
+            thinkingTime =
+                Math.Max(
+                    300,
+                    thinkingTime -
+                    random.Next(
+                        100,
+                        450));
+        }
+
+        return thinkingTime;
+    }
 
     private void AddGameOver()
     {
@@ -1076,12 +1222,10 @@ else
         }
     }
 
-
     private void AddComment(
         string message)
     {
-        if (string.IsNullOrWhiteSpace(
-                message))
+        if (string.IsNullOrWhiteSpace(message))
         {
             return;
         }
@@ -1094,13 +1238,11 @@ else
         }
     }
 
-
     private string BuildNotation(
         Move move)
     {
         var p =
-            game.Board[
-                move.From]!;
+            game.Board[move.From]!;
 
         if (move.IsCastle)
         {
@@ -1116,7 +1258,8 @@ else
             ChessGame.PieceLetter(
                 p.Type));
 
-        if (p.Type == PieceType.Pawn &&
+        if (p.Type ==
+            PieceType.Pawn &&
             move.Captured != null)
         {
             sb.Append(
@@ -1151,13 +1294,12 @@ else
         return sb.ToString();
     }
 
-
     private void Promote(
         Move move)
     {
-        _ = PromoteAsync(move);
+        _ = PromoteAsync(
+            move);
     }
-
 
     private async Task PromoteAsync(
         Move move)
@@ -1165,7 +1307,6 @@ else
         await MakePlayerMoveAsync(
             move);
     }
-
 
     private string SquareClass(
         int sq,
@@ -1192,7 +1333,7 @@ else
         if (game.IsInCheck(
                 game.Turn) &&
             game.Board[sq]?.Type ==
-                PieceType.King)
+            PieceType.King)
         {
             cls += " check";
         }
@@ -1200,11 +1341,11 @@ else
         return cls;
     }
 
-
     private static string PieceGlyph(
         Piece p)
     {
-        return p.Color == PieceColor.White
+        return p.Color ==
+               PieceColor.White
             ? p.Type switch
             {
                 PieceType.King => "♔",
@@ -1224,16 +1365,6 @@ else
                 _ => "♟"
             };
     }
-
-
-    private static string PieceCssClass(
-        Piece p)
-    {
-        return p.Color == PieceColor.White
-            ? "piece piece-white"
-            : "piece piece-black";
-    }
-
 
     private static string PieceName(
         Piece p)
@@ -1260,7 +1391,6 @@ else
         };
     }
 
-
     private static string Captured(
         IEnumerable<Piece> pieces)
     {
@@ -1269,7 +1399,6 @@ else
             pieces.Select(
                 PieceGlyph));
     }
-
 
     private string ComputerId()
     {
@@ -1283,7 +1412,6 @@ else
             + "";
     }
 
-
     private string SquareAria(
         int sq,
         Piece? p)
@@ -1294,7 +1422,6 @@ else
                 ? "empty"
                 : PieceName(p))}";
     }
-
 
     private string DisplayResult()
     {
@@ -1317,6 +1444,92 @@ else
         };
     }
 
+    private int? GetComputerKingSquare()
+    {
+        var computerColor =
+            ChessGame.Opp(
+                playerColor);
+
+        for (int sq = 0;
+             sq < 64;
+             sq++)
+        {
+            var piece =
+                game.Board[sq];
+
+            if (piece is not null &&
+                piece.Color == computerColor &&
+                piece.Type ==
+                PieceType.King)
+            {
+                return sq;
+            }
+        }
+
+        return null;
+    }
+
+    private string KingBubbleStyle(
+        int square)
+    {
+        var row =
+            ChessGame.Row(square);
+
+        var col =
+            ChessGame.Col(square);
+
+        var left =
+            (col * 12.5) + 6.25;
+
+        var top =
+            (row * 12.5) + 2.0;
+
+        var leftText =
+            left.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        var topText =
+            top.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        return
+            $"left:{leftText}%;top:{topText}%;";
+    }
+
+    private string PieceUrl(
+        Piece piece)
+    {
+        var side =
+            piece.Color ==
+            PieceColor.White
+                ? "first-player"
+                : "second-player";
+
+        var pieceName =
+            piece.Type switch
+            {
+                PieceType.King =>
+                    "king",
+
+                PieceType.Queen =>
+                    "queen",
+
+                PieceType.Rook =>
+                    "rook",
+
+                PieceType.Bishop =>
+                    "bishop",
+
+                PieceType.Knight =>
+                    "knight",
+
+                _ =>
+                    "pawn"
+            };
+
+        return
+            $"{AssetRoot}{side}/{pieceName}.svg";
+    }
 
     private void CancelComputer()
     {
@@ -1334,7 +1547,6 @@ else
 
         thinking = false;
     }
-
 
     public void Dispose()
     {
