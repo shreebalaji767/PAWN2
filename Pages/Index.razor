@@ -267,11 +267,10 @@ else
 
                                 @if (piece is not null)
                                 {
-                                    <img class="piece"
-                                         src="@PieceUrl(piece)"
-                                         alt="@PieceName(piece)"
-                                         draggable="false"
-                                         loading="eager" />
+                                    <span class="piece @(piece.Color == PieceColor.White ? "piece-white" : "piece-black")"
+                                          aria-hidden="true">
+                                        @PieceGlyph(piece)
+                                    </span>
                                 }
 
 
@@ -2043,46 +2042,6 @@ else
 
         return
             $"left:{leftText}%;top:{topText}%;";
-    }
-
-
-    private string PieceUrl(
-        Piece piece)
-    {
-        var side =
-            piece.Color ==
-                PieceColor.White
-                ? "first"
-                : "second";
-
-
-        var pieceName =
-            piece.Type switch
-            {
-                PieceType.King =>
-                    "king",
-
-                PieceType.Queen =>
-                    "queen",
-
-                PieceType.Rook =>
-                    "rook",
-
-                PieceType.Bishop =>
-                    "bishop",
-
-                PieceType.Knight =>
-                    "knight",
-
-                _ =>
-                    "pawn"
-            };
-
-
-        return
-            $"{AssetRoot}" +
-            $"{side}/representations/western/" +
-            $"{pieceName}.svg";
     }
 
 
