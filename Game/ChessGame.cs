@@ -124,7 +124,16 @@ public sealed class ChessGame
         if(move.IsEnPassant){int cap=Row(move.From)*8+Col(move.To);Board[cap]=null;}
         Board[move.To]=p;p.HasMoved=true;
         if(move.Promotion.HasValue)Board[move.To]=new Piece(move.Promotion.Value,p.Color,true);
-        if(move.IsCastle){int r=Row(move.From);if(move.To>move.From){Board[r*8+5]=Board[r*8+7];Board[r*8+7]=null;Board[r*8+5]!.HasMoved=true;}else{Board[r*8+3]=Board[r*8];Board[r*8]=null;Board[r*8+3]!.HasMoved=true;}}
+        if(move.IsCastle)
+        {
+            int r=Row(move.From);
+            int rookFrom=move.To>move.From?r*8+7:r*8;
+            int rookTo=move.To>move.From?r*8+5:r*8+3;
+            var rook=Board[rookFrom];
+            Board[rookFrom]=null;
+            Board[rookTo]=rook;
+            if(rook is not null) rook.HasMoved=true;
+        }
         EnPassantTarget=null;if(p.Type==PieceType.Pawn&&Math.Abs(Row(move.To)-Row(move.From))==2)EnPassantTarget=(move.From+move.To)/2;
         if(trackCapture&&move.Captured!=null){if(move.Captured.Color==PieceColor.White)CapturedWhite.Add(move.Captured);else CapturedBlack.Add(move.Captured);}
     }
@@ -133,8 +142,10 @@ public sealed class ChessGame
     {
         var moves=LegalMoves(Turn);
         if(moves.Count==0){GameOver=true;Result=IsInCheck(Turn)?(Turn==PieceColor.White?"BLACK CHECKMATE":"WHITE CHECKMATE"):"STALEMATE";return;}
+        if(HalfmoveClock>=150){GameOver=true;Result="DRAW — SEVENTY-FIVE-MOVE RULE";return;}
         if(HalfmoveClock>=100){GameOver=true;Result="DRAW — FIFTY-MOVE RULE";return;}
-        if(repetition.TryGetValue(PositionKey(),out var count)&&count>=3){GameOver=true;Result="DRAW — THREEFOLD REPETITION";return;}
+        if(repetition.TryGetValue(PositionKey(),out var count)&&count>=5){GameOver=true;Result="DRAW — FIVEFOLD REPETITION";return;}
+        if(repetition.TryGetValue(PositionKey(),out count)&&count>=3){GameOver=true;Result="DRAW — THREEFOLD REPETITION";return;}
         if(IsInsufficientMaterial()){GameOver=true;Result="DRAW — INSUFFICIENT MATERIAL";}
     }
 
