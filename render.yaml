@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: pawn2
+    runtime: static
+    buildCommand: dotnet publish -c Release -o dist
+    staticPublishPath: dist/wwwroot
+    pullRequestPreviewsEnabled: false
