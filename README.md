@@ -37,7 +37,7 @@ dotnet publish -c Release -o publish
 Deploy `publish/wwwroot` as the static site directory.
 
 ## Important
-Replace `https://example.com/` in `wwwroot/index.html` and `wwwroot/sitemap.xml` with the real public domain before deployment.
+The static asset paths are intentionally relative so the same build works at the Render domain root and under the GitHub Pages `/PAWN2/` path.
 
 
 ## 2026 upgrade
@@ -48,6 +48,6 @@ Replace `https://example.com/` in `wwwroot/index.html` and `wwwroot/sitemap.xml`
 - GitHub Pages-ready canonical URL, robots.txt, and sitemap.
 
 ### Deployment
-The repository is configured for the GitHub Pages URL: `https://shreebalaji767.github.io/PAWN2/`.
+The primary deployment is `https://pawn2.onrender.com/`. The app also remains compatible with GitHub Pages under `/PAWN2/`.
 
 If you deploy the same build at another public domain, update the canonical URL and sitemap URL in `wwwroot/index.html`, `wwwroot/robots.txt`, and `wwwroot/sitemap.xml`.
