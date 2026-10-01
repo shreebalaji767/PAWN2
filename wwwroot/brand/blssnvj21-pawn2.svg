@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" role="img" aria-labelledby="t d">
+<title id="t">BLSSNVJ21 — PAWN²</title><desc id="d">BLSSNVJ21 brand mark for PAWN squared chaotic chess.</desc>
+<defs><linearGradient id="gold" x1="0" x2="1"><stop stop-color="#ffcc33"/><stop offset="1" stop-color="#ffe27a"/></linearGradient></defs>
+<rect width="1000" height="360" rx="60" fill="#090b10"/>
+<rect x="24" y="24" width="952" height="312" rx="46" fill="#151b24" stroke="url(#gold)" stroke-width="6"/>
+<g transform="translate(62 62)" fill="none" stroke="url(#gold)" stroke-width="13" stroke-linejoin="round"><path d="M54 28v42M32 49h44M22 78h64l-14 39H36zM35 117h38l20 83H18zM8 206h92"/></g>
+<text x="190" y="190" fill="#f4f6f8" font-family="Arial,Helvetica,sans-serif" font-size="118" font-weight="900" letter-spacing="-5">PAWN</text>
+<text x="735" y="105" fill="url(#gold)" font-family="Arial,Helvetica,sans-serif" font-size="78" font-weight="900">²</text>
+<text x="190" y="274" fill="url(#gold)" font-family="Arial,Helvetica,sans-serif" font-size="55" font-weight="800" letter-spacing="10">BLSSNVJ21</text>
+</svg>
