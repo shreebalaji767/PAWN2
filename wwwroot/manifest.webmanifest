@@ -8,7 +8,10 @@
   "orientation": "any",
   "background_color": "#090b10",
   "theme_color": "#090b10",
-  "categories": ["games", "entertainment"],
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "icons": [
     {
       "src": "icons/icon.svg",
@@ -16,5 +19,20 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "New Game",
+      "short_name": "New Game",
+      "url": "/?new=1",
+      "icons": [
+        {
+          "src": "icons/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ],
+  "lang": "en",
+  "dir": "ltr"
 }
