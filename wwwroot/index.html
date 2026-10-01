@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" content="#090b10" />
-    <meta name="description" content="BLSSNVJ21 presents PAWN² — free chaotic browser chess with four difficulty levels, responsive play, and no account required." />
+    <meta name="description" content="BLSSNVJ21 presents PAWN² — free chaotic browser chess with four difficulty levels, responsive play, PWA install support, and no account required." />
     <meta name="robots" content="index,follow" />
     <meta property="og:title" content="BLSSNVJ21 — PAWN²" />
     <meta property="og:description" content="32 pieces. 64 squares. 0 brain cells." />
@@ -20,6 +20,7 @@
     <meta name="author" content="PAWN²" />
     <meta name="creator" content="PAWN²" />
     <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090b10" />
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -48,6 +49,12 @@
 <div id="app"><div class="boot">PAWN²<br><small>LOADING CHESS...</small></div></div>
 <script src="_framework/blazor.webassembly.js"></script>
 <script src="js/effects.js"></script>
+<script>
+let pawn2DeferredInstall=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pawn2DeferredInstall=e;});
+window.pawn2CanInstall=()=>!!pawn2DeferredInstall;
+window.pawn2Install=async()=>{if(!pawn2DeferredInstall)return false;const e=pawn2DeferredInstall;pawn2DeferredInstall=null;await e.prompt();await e.userChoice;return true;};
+</script>
 <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
