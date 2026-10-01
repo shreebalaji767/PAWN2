@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 320" role="img" aria-labelledby="title desc">
+<title id="title">PAWN² logo</title><desc id="desc">PAWN squared chess logo with a stylized king.</desc>
+<defs><linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#ffcc33"/><stop offset="1" stop-color="#ffe07a"/></linearGradient></defs>
+<rect width="840" height="320" rx="54" fill="#090b10"/>
+<g transform="translate(36 36)" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linejoin="round">
+<path d="M84 38v48M58 62h52M48 100h72l-18 46H66zM58 146h52l22 82H36zM30 238h108"/>
+</g>
+<text x="230" y="210" fill="#f4f6f8" font-family="Arial,Helvetica,sans-serif" font-size="142" font-weight="900" letter-spacing="-8">PAWN</text>
+<text x="690" y="112" fill="url(#gold)" font-family="Arial,Helvetica,sans-serif" font-size="92" font-weight="900">²</text>
+</svg>
