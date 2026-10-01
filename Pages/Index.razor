@@ -154,6 +154,13 @@
             </div>
 
             <button type="button"
+                    class="secondary big install-app-button"
+                    @onclick="InstallApp"
+                    style="@InstallButtonStyle()">
+                📲 INSTALL APP
+            </button>
+
+            <button type="button"
                     class="secondary big start-game-button"
                     @onclick="OpenSideSelection">
 
@@ -876,6 +883,22 @@ else
 
     private CancellationTokenSource? computerCts;
 
+    private bool canInstallApp;
+
+
+    private async Task InstallApp()
+    {
+        try { await JS.InvokeVoidAsync("pawn2Install"); } catch (JSException) { }
+    }
+
+    private string InstallButtonStyle() => canInstallApp ? "" : "display:none;";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try { canInstallApp = await JS.InvokeAsync<bool>("pawn2CanInstall"); } catch (JSException) { canInstallApp = false; }
+        StateHasChanged();
+    }
 
     private const string AssetRoot =
         "https://sashite.dev/assets/chess/sides/";
