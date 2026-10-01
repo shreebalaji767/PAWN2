@@ -2,8 +2,8 @@
   "name": "BLSSNVJ21 — PAWN² — Chaotic Chess",
   "short_name": "PAWN²",
   "description": "BLSSNVJ21 presents free chaotic browser chess.",
-  "start_url": "/PAWN2/",
-  "scope": "/PAWN2/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#090b10",
@@ -24,7 +24,7 @@
     {
       "name": "New Game",
       "short_name": "New Game",
-      "url": "/PAWN2/?new=1",
+      "url": "./?new=1",
       "icons": [
         {
           "src": "icons/icon.svg",
@@ -35,7 +35,7 @@
   ],
   "lang": "en",
   "dir": "ltr",
-  "id": "/PAWN2/",
+  "id": "./",
   "display_override": [
     "window-controls-overlay",
     "standalone"
