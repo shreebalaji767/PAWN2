@@ -2319,3 +2319,10 @@ img {
         box-shadow: none;
     }
 }
+
+
+/* ACCESSIBILITY + BOARD FLIP */
+button:focus-visible,
+a:focus-visible { outline: 3px solid rgba(255, 204, 51, 0.85); outline-offset: 3px; }
+.square:focus-visible { z-index: 5; outline: 3px solid rgba(255, 204, 51, 0.95); outline-offset: -3px; }
+.flip-board-button { touch-action: manipulation; }
