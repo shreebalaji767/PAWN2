@@ -805,9 +805,10 @@ else
                     <button type="button"
                             @onclick="() => Promote(m)">
 
-                        <img class="promo-piece"
-                             src="@PieceUrl(promoted)"
-                             alt="@PieceName(promoted)" />
+                        <span class="promo-piece @(promoted.Color == PieceColor.White ? "piece-white" : "piece-black")"
+                              aria-hidden="true">
+                            @PieceGlyph(promoted)
+                        </span>
 
                         @PieceName(promoted)
 
