@@ -2,6 +2,14 @@
 @using System.Text
 @implements IDisposable
 
+<HeadContent>
+    <meta name="description" content="PAWN² is a free, browser-based chess game with chaotic computer personalities, four difficulty levels, responsive design, and no account required." />
+    <meta name="keywords" content="PAWN2, chess game, browser chess, free chess, Blazor chess, chess AI, online chess" />
+    <meta property="og:title" content="PAWN² — Free Chaotic Chess" />
+    <meta property="og:description" content="32 pieces. 64 squares. 0 brain cells. Play free chess in your browser." />
+    <meta name="twitter:card" content="summary" />
+</HeadContent>
+
 <PageTitle>PAWN² — 32 Pieces • 64 Squares • 0 Brain Cells</PageTitle>
 
 @if (!started)
@@ -222,9 +230,9 @@ else
                          role="grid"
                          aria-label="Chess board">
 
-                        @for (int sq = 0; sq < 64; sq++)
+                        @for (int displaySq = 0; displaySq < 64; displaySq++)
                         {
-                            var localSq = sq;
+                            var localSq = DisplaySquare(displaySq);
 
                             var piece =
                                 game.Board[localSq];
@@ -456,6 +464,16 @@ else
                     @onclick="NewGame">
 
                 🔄 NEW GAME
+
+            </button>
+
+
+            <button type="button"
+                    class="flip-board-button"
+                    aria-label="Flip chess board"
+                    @onclick="FlipBoard">
+
+                ↻ FLIP BOARD
 
             </button>
 
@@ -826,6 +844,8 @@ else
 
     private bool chooseSide;
 
+    private bool boardFlipped;
+
 
     private int? selectedSquare;
 
@@ -1046,6 +1066,7 @@ else
         chooseSide = false;
 
         selectedSide = color;
+        boardFlipped = color == PieceColor.Black;
 
         await StartAsync(
             color);
@@ -1080,6 +1101,8 @@ else
 
 
         selectedSquare = null;
+
+        boardFlipped = color == PieceColor.Black;
 
         legalTargets.Clear();
 
@@ -1247,6 +1270,19 @@ else
 
         _ = MakePlayerMoveAsync(
             options[0]);
+    }
+
+
+    private int DisplaySquare(int displaySquare)
+    {
+        return boardFlipped ? 63 - displaySquare : displaySquare;
+    }
+
+
+    private void FlipBoard()
+    {
+        boardFlipped = !boardFlipped;
+        ClearSelection();
     }
 
 
@@ -1959,12 +1995,15 @@ else
             ChessGame.Col(square);
 
 
+        var displayRow = boardFlipped ? 7 - row : row;
+        var displayCol = boardFlipped ? 7 - col : col;
+
         var left =
-            (col * 12.5) + 6.25;
+            (displayCol * 12.5) + 6.25;
 
 
         var top =
-            (row * 12.5) + 2.0;
+            (displayRow * 12.5) + 2.0;
 
 
         var leftText =
