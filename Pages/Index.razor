@@ -266,7 +266,7 @@ else
                                 }
 
 
-                                @if (ChessGame.Col(localSq) == 0)
+                                @if ((displaySq % 8) == 0)
                                 {
                                     <span class="rank">
                                         @(8 - ChessGame.Row(localSq))
@@ -274,7 +274,7 @@ else
                                 }
 
 
-                                @if (ChessGame.Row(localSq) == 7)
+                                @if ((displaySq / 8) == 7)
                                 {
                                     <span class="file">
                                         @((char)('a' + ChessGame.Col(localSq)))
