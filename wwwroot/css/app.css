@@ -2364,3 +2364,8 @@ button { min-height: 44px; }
     .difficulty-option { min-height: 76px; }
     .controls { grid-template-columns: 1fr; }
 }
+
+
+/* BLSSNVJ21 BRANDING */
+.brand-byline { margin-top: 10px; color: var(--accent); font-size: 9px; font-weight: 1000; letter-spacing: .28em; text-transform: uppercase; }
+@media (max-width:700px){ .brand-byline{font-size:8px;letter-spacing:.22em;} }
