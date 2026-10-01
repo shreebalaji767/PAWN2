@@ -129,22 +129,27 @@ img {
    BRAND
    ========================================================= */
 
-.brand {
-    color: var(--text);
-
-    font-size: clamp(62px, 12vw, 120px);
-    font-weight: 1000;
-    line-height: 0.88;
-
-    letter-spacing: -0.085em;
+.brand-logo {
+    display: block;
+    width: min(420px, 82vw);
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
 }
 
-.brand span {
-    color: var(--accent);
+.brand-logo-small {
+    width: 210px;
+    margin: 0;
 }
 
-.brand.small {
-    font-size: 36px;
+@media (max-width: 700px) {
+    .brand-logo {
+        width: min(360px, 82vw);
+    }
+
+    .brand-logo-small {
+        width: 150px;
+    }
 }
 
 .tagline {
@@ -2326,3 +2331,36 @@ button:focus-visible,
 a:focus-visible { outline: 3px solid rgba(255, 204, 51, 0.85); outline-offset: 3px; }
 .square:focus-visible { z-index: 5; outline: 3px solid rgba(255, 204, 51, 0.95); outline-offset: -3px; }
 .flip-board-button { touch-action: manipulation; }
+
+
+/* =========================================================
+   DEVICE-SAFE UI
+   ========================================================= */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { padding-bottom: env(safe-area-inset-bottom); }
+button { min-height: 44px; }
+.board-wrap { touch-action: manipulation; }
+
+@media (min-width: 1600px) {
+    .game-shell { padding-left: 48px; padding-right: 48px; }
+    .game-layout { grid-template-columns: minmax(0, 1fr) 400px; gap: 28px; }
+}
+
+@media (max-width: 700px) {
+    .start-screen { min-height: 100svh; }
+    .game-shell { min-height: 100svh; padding-top: max(10px, env(safe-area-inset-top)); }
+    .topbar { flex-wrap: wrap; }
+    .game-top-actions { margin-left: auto; }
+    .controls { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 430px) {
+    .game-top-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .game-top-actions .difficulty-badge { justify-content: center; }
+}
+
+@media (max-width: 320px) {
+    .difficulty-choice { grid-template-columns: 1fr; }
+    .difficulty-option { min-height: 76px; }
+    .controls { grid-template-columns: 1fr; }
+}
