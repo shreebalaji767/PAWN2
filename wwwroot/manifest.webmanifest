@@ -34,5 +34,13 @@
     }
   ],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "id": "/PAWN2/",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }
