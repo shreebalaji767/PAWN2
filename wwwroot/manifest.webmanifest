@@ -1,7 +1,7 @@
 {
-  "name": "PAWN² — Chaotic Chess",
+  "name": "BLSSNVJ21 — PAWN² — Chaotic Chess",
   "short_name": "PAWN²",
-  "description": "Free browser chess with chaotic computer personalities.",
+  "description": "BLSSNVJ21 presents free chaotic browser chess.",
   "start_url": "/PAWN2/",
   "scope": "/PAWN2/",
   "display": "standalone",
@@ -24,7 +24,7 @@
     {
       "name": "New Game",
       "short_name": "New Game",
-      "url": "/?new=1",
+      "url": "/PAWN2/?new=1",
       "icons": [
         {
           "src": "icons/icon.svg",
