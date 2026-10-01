@@ -843,15 +843,14 @@ img {
 
 .piece {
     position: relative;
-
     z-index: 2;
 
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     width: 88%;
     height: 88%;
-
-    object-fit: contain;
 
     font-family:
         "Noto Sans Symbols 2",
@@ -860,17 +859,15 @@ img {
         sans-serif;
 
     font-size: clamp(34px, 6vw, 76px);
-
+    font-weight: 400;
     line-height: 1;
-
     text-align: center;
 
     user-select: none;
-
     pointer-events: none;
 
     transform: translateY(-1%);
-}
+
 
 .piece-white {
     color: #ffffff;
@@ -889,11 +886,9 @@ img {
         0 3px 5px rgba(0, 0, 0, 0.55);
 }
 
-.square img.piece {
+.square .piece {
     width: 88%;
     height: 88%;
-
-    object-fit: contain;
 }
 
 /* =========================================================
