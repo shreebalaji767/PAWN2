@@ -38,3 +38,16 @@ Deploy `publish/wwwroot` as the static site directory.
 
 ## Important
 Replace `https://example.com/` in `wwwroot/index.html` and `wwwroot/sitemap.xml` with the real public domain before deployment.
+
+
+## 2026 upgrade
+- Responsive board with automatic Black-side orientation and a manual **Flip Board** control.
+- Improved keyboard focus visibility and accessible board controls.
+- Installable PWA manifest and service-worker shell caching.
+- Improved page metadata for search and social sharing.
+- GitHub Pages-ready canonical URL, robots.txt, and sitemap.
+
+### Deployment
+The repository is configured for the GitHub Pages URL: `https://shreebalaji767.github.io/PAWN2/`.
+
+If you deploy the same build at another public domain, update the canonical URL and sitemap URL in `wwwroot/index.html`, `wwwroot/robots.txt`, and `wwwroot/sitemap.xml`.
